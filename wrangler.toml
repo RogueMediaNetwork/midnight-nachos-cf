@@ -1,0 +1,8 @@
+name = "midnight-nachos"
+compatibility_date = "2024-01-01"
+pages_build_output_dir = "dist"
+
+[[kv_namespaces]]
+binding = "STORIES_KV"
+id = "16d850c099704d708e7af8da0356ddb7"
+preview_id = "16d850c099704d708e7af8da0356ddb7"
