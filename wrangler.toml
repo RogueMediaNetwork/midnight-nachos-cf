@@ -1,8 +1,9 @@
-name = "midnight-nachos"
+name = "youxai-attendee"
 compatibility_date = "2024-01-01"
 pages_build_output_dir = "dist"
 
 [[kv_namespaces]]
-binding = "STORIES_KV"
+binding = "EVENT_KV"
+# Replace with the namespace ID you create for the summit (see DEPLOY.md)
 id = "16d850c099704d708e7af8da0356ddb7"
 preview_id = "16d850c099704d708e7af8da0356ddb7"

@@ -1,41 +1,43 @@
-export interface StonerStory {
+export type TrackId = "main" | "ai" | "creator" | "break";
+
+export interface Session {
   id: string;
   title: string;
-  content: string;
-  upvotes: number;
+  description: string;
+  track: TrackId;
+  start: string; // "09:00" 24h, event-local time (CDT)
+  end: string;
+  location: string;
+  speakerIds: string[];
+}
+
+export interface Speaker {
+  id: string;
+  name: string;
+  role: string;
+  company: string;
+  bio: string;
   tags: string[];
+}
+
+export interface Announcement {
+  id: string;
+  title: string;
+  body: string;
+  priority: "info" | "important";
   createdAt: string;
 }
 
-export interface Recipe {
+export interface AttendeeQuestion {
   id: string;
-  name: string;
-  difficulty: 'Easy (No Heat)' | 'Medium (Stove/Oven)' | 'High Effort (Culinary Master)';
-  prepTime: string;
-  ingredients: string[];
-  instructions: string[];
-  description: string;
-  category: 'sweet' | 'savory' | 'beverage' | 'weird-combo';
-  rating: number; // fun rating, like 4.8 / 5 high-ness
+  question: string;
+  author: string;
+  sessionId: string | null;
+  upvotes: number;
+  createdAt: string;
 }
 
-export interface Product {
-  id: string;
-  name: string;
-  price: number;
-  description: string;
-  imageUrl: string;
-  type: 'apparel' | 'affiliate'; // apparel (Printify style), affiliate (Amazon style munchie gadgets)
-  buyUrl: string;
-  rating: number;
-  isCustomizable?: boolean;
-}
-
-export interface GeneratedMunchie {
-  name: string;
-  description: string;
-  highnessRequired: string; // e.g., "3/5 (Cozy Buzz)", "5/5 (Interstellar)"
-  ingredients: string[];
-  instructions: string[];
-  trippyTip: string;
+export interface ConciergeMessage {
+  role: "user" | "assistant";
+  content: string;
 }
