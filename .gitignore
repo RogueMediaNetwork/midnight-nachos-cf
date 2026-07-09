@@ -3,3 +3,9 @@ dist
 .env
 .env.local
 .wrangler
+
+# graphify generated knowledge graph (regenerated on demand via `graphify update .`)
+graphify-out/
+
+# Python bytecode from vendored skill scripts
+__pycache__/
