@@ -75,7 +75,7 @@ if (mode === "--stills") {
   });
   const t0 = Date.now();
   for (let i = 0; i < nFrames; i++) {
-    const buf = await frame(i / FPS);
+    const buf = await frame(i / FPS, "jpeg");
     if (!ff.stdin.write(buf)) {
       await new Promise((r) => ff.stdin.once("drain", r));
     }
