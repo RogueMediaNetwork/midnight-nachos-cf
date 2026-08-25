@@ -1,6 +1,7 @@
 :root {
   --fresh-paper: var(--mn-surface, oklch(18% 0.022 292));
   --fresh-paper-raised: var(--mn-surface-raised, oklch(23% 0.032 292));
+  --fresh-ad-void: oklch(9% 0.012 55);
   --fresh-ink: oklch(94% 0.015 86);
   --fresh-muted: var(--mn-muted, oklch(70% 0.035 292));
   --fresh-wire: var(--mn-accent, oklch(78% 0.16 68));

@@ -19,6 +19,8 @@ interface FreshBatchState {
 }
 
 const FreshBatchContext = createContext<FreshBatchState>({ stories: [], loading: true });
+type LiveAd = { slot: "hero" | "stream" | "footer"; imageUrl: string; alt: string; href: string };
+const AdsContext = createContext<LiveAd[]>([]);
 
 const fetchFreshBatch = async (): Promise<Omit<FreshBatchState, "loading">> => {
   const response = await fetch("/api/fresh-batch", { headers: { Accept: "application/json" } });
@@ -50,6 +52,14 @@ export function FreshBatchProvider({ children }: { children: ReactNode }) {
 
   return <FreshBatchContext.Provider value={state}>{children}</FreshBatchContext.Provider>;
 }
+
+export function AdsProvider({ children }: { children: ReactNode }) {
+  const [ads, setAds] = useState<LiveAd[]>([]);
+  useEffect(() => { fetch("/api/ads").then(response => response.ok ? response.json() : []).then(data => setAds(Array.isArray(data) ? data : [])).catch(() => setAds([])); }, []);
+  return <AdsContext.Provider value={ads}>{children}</AdsContext.Provider>;
+}
+
+function useAd(slot: LiveAd["slot"]) { return useContext(AdsContext).find(ad => ad.slot === slot); }
 
 function useFreshBatch() {
   return useContext(FreshBatchContext);
@@ -158,35 +168,41 @@ export function FreshBatchPocket() {
 }
 
 export function SponsorPocket() {
+  const ad = useAd("hero");
   return (
-    <aside className="fresh-batch-ad" aria-label="Advertising placement">
+    <aside className={`fresh-batch-ad ${ad ? "fresh-batch-ad--live" : "fresh-batch-ad--placeholder"}`} aria-label="Advertising placement">
+      {ad ? <a className="fresh-batch-ad__image" href={ad.href} target="_blank" rel="noreferrer"><img src={ad.imageUrl} alt={ad.alt || "Sponsored placement"} /></a> : null}
       <div className="fresh-batch-ad__top">
         <span className="fresh-batch-ad-label">Ad space</span>
-        <span className="fresh-batch-source">Snack break</span>
+        <span className="fresh-batch-source">{ad ? "Sponsored" : "Backstage"}</span>
       </div>
-      <h3>Your late-night brand goes here.</h3>
-      <p>A compact placement for food, culture, glass, art, events, and the things people reach for after midnight.</p>
+      <h3>{ad ? "Sponsored after-hours find" : "Drop a banner here."}</h3>
+      <p>{ad ? "Open the sponsor link." : "Use Backstage to upload a banner and set its link."}</p>
     </aside>
   );
 }
 
 export function SponsorStrip({
+  slot = "stream",
   placement = "After-hours shelf",
   headline = "Put your good stuff in front of the night owls.",
   copy = "A roomy home for a food, glass, art, event, or local business that fits the Midnight Nachos crowd.",
 }: {
+  slot?: LiveAd["slot"];
   placement?: string;
   headline?: string;
   copy?: string;
 }) {
+  const ad = useAd(slot);
   return (
-    <aside className="fresh-batch-ad fresh-batch-ad--wide" aria-label="Advertising placement">
+    <aside className={`fresh-batch-ad fresh-batch-ad--wide ${ad ? "fresh-batch-ad--live" : "fresh-batch-ad--placeholder"}`} aria-label="Advertising placement">
+      {ad ? <a className="fresh-batch-ad__image" href={ad.href} target="_blank" rel="noreferrer"><img src={ad.imageUrl} alt={ad.alt || "Sponsored placement"} /></a> : null}
       <div>
         <span className="fresh-batch-ad-label">Ad space</span>
-        <h3>{headline}</h3>
-        <p>{copy}</p>
+        <h3>{ad ? "Sponsored after-hours find" : headline}</h3>
+        <p>{ad ? "Open the sponsor link." : copy}</p>
       </div>
-      <span className="fresh-batch-ad__placement">{placement}</span>
+      <span className="fresh-batch-ad__placement">{ad ? "Sponsored" : placement}</span>
     </aside>
   );
 }

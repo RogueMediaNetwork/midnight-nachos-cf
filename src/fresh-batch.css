@@ -42,7 +42,7 @@ body {
   display: flex;
   width: max-content;
   align-items: center;
-  animation: fresh-batch-marquee 58s linear infinite;
+  animation: fresh-batch-marquee 64s linear infinite;
 }
 
 .fresh-batch-ticker__viewport:hover .fresh-batch-ticker__track {
@@ -127,6 +127,11 @@ body {
   font-family: var(--fresh-font-body);
 }
 
+.fresh-batch-ad--placeholder { background: var(--fresh-ad-void); }
+.fresh-batch-ad--live { overflow: hidden; }
+.fresh-batch-ad__image { display: block; overflow: hidden; border-radius: calc(var(--fresh-radius-lg) - var(--fresh-space-2)); }
+.fresh-batch-ad__image img { display: block; width: 100%; max-height: 13rem; object-fit: cover; }
+
 .fresh-batch-lead {
   border-radius: var(--fresh-radius-lg);
   padding: var(--fresh-space-5);
@@ -164,6 +169,7 @@ body {
 }
 
 .fresh-batch-ad--wide h3 { max-width: 36rem; }
+.fresh-batch-ad--wide .fresh-batch-ad__image { flex: 0 0 min(38%, 24rem); }
 
 .fresh-batch-ad__placement {
   flex: 0 0 auto;

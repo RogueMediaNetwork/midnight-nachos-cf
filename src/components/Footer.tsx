@@ -7,7 +7,7 @@ const SOCIAL_LINKS = [
   { label: "Reddit", icon: MessageCircle, href: "https://www.reddit.com/r/trees/", note: "Read the r/trees community" },
 ];
 
-export default function Footer() {
+export default function Footer({ onOpenBackstage }: { onOpenBackstage: () => void }) {
   return (
     <footer id="app-footer" className="mt-auto w-full border-t border-slate-900 bg-slate-950 py-10 px-4 text-slate-500 font-sans">
       <div className="mx-auto max-w-7xl">
@@ -29,6 +29,7 @@ export default function Footer() {
         </div>
 
         <SponsorStrip
+          slot="footer"
           placement="Closing credits"
           headline="A good spot for a midnight-minded partner."
           copy="For snacks, art, music, events, local spots, and useful things night owls actually like."
@@ -67,6 +68,7 @@ export default function Footer() {
           <div className="flex items-center gap-1">
             Made with <Heart className="h-3 w-3 text-pink-500 fill-pink-500" /> for the late-night foodies.
           </div>
+          <button type="button" className="mn-backstage-link" onClick={onOpenBackstage}>Backstage</button>
         </div>
       </div>
     </footer>

@@ -76,6 +76,28 @@
 
 .mn-social-link:hover { color: var(--mn-accent); }
 .mn-social-link--pending { cursor: default; opacity: 0.62; }
+.mn-backstage-link { border: 0; background: transparent; color: var(--mn-muted); cursor: pointer; font: inherit; font-size: 0.72rem; text-decoration: underline; text-underline-offset: 0.2rem; }
+.mn-backstage-link:hover { color: var(--mn-accent); }
+.mn-backstage-link:focus-visible { outline: 3px solid var(--mn-accent); outline-offset: 3px; }
+
+.mn-backstage { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; padding: 1rem; background: color-mix(in oklch, var(--mn-bg) 78%, transparent); backdrop-filter: blur(12px); }
+.mn-backstage__panel { width: min(100%, 62rem); max-height: min(88vh, 54rem); overflow: auto; border: 1px solid color-mix(in oklch, var(--mn-accent) 38%, transparent); border-radius: 1.25rem; background: var(--mn-surface); color: var(--mn-text); padding: 1.25rem; }
+.mn-backstage__head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; }
+.mn-backstage__head span, .mn-backstage__ads article > div > span { color: var(--mn-accent); font-family: var(--mn-font-mono); font-size: 0.65rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
+.mn-backstage h2 { margin: 0.2rem 0 0; font-size: 1.45rem; }
+.mn-backstage button { border: 1px solid color-mix(in oklch, var(--mn-accent) 58%, transparent); border-radius: 999px; background: var(--mn-surface-raised); color: var(--mn-text); cursor: pointer; padding: 0.55rem 0.8rem; font: inherit; font-size: 0.72rem; font-weight: 800; }
+.mn-backstage button:hover { background: var(--mn-accent); color: var(--mn-bg); }
+.mn-backstage button:focus-visible, .mn-backstage input:focus-visible { outline: 3px solid var(--mn-accent); outline-offset: 3px; }
+.mn-backstage__login { display: grid; gap: 0.8rem; max-width: 24rem; }
+.mn-backstage label { display: grid; gap: 0.35rem; color: var(--mn-muted); font-size: 0.72rem; }
+.mn-backstage input { min-width: 0; border: 1px solid color-mix(in oklch, var(--mn-text) 20%, transparent); border-radius: 0.6rem; background: var(--mn-bg); color: var(--mn-text); padding: 0.6rem 0.7rem; font: inherit; }
+.mn-backstage__ads { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.8rem; }
+.mn-backstage__ads article { display: grid; align-content: start; gap: 0.7rem; min-width: 0; padding: 0.85rem; border: 1px solid color-mix(in oklch, var(--mn-text) 13%, transparent); border-radius: 0.85rem; background: var(--mn-surface-raised); }
+.mn-backstage__ads img, .mn-backstage__blank { display: block; width: 100%; height: 6rem; margin-top: 0.45rem; border-radius: 0.5rem; object-fit: cover; }
+.mn-backstage__blank { display: grid; place-items: center; background: var(--mn-bg); color: var(--mn-muted); font-size: 0.68rem; }
+.mn-backstage__toggle { display: flex !important; grid-template-columns: auto 1fr; align-items: center; }
+.mn-backstage__toggle input { width: 1rem; height: 1rem; }
+.mn-backstage__note { min-height: 1.4rem; margin: 1rem 0 0; color: var(--mn-accent); font-size: 0.75rem; }
 
 .mn-legal-note {
   display: grid;
@@ -107,7 +129,7 @@
 .mn-legal-note__items p { margin: 0; overflow-wrap: anywhere; }
 
 .mn-hero-nook {
-  height: 7.5rem;
+  height: clamp(10rem, 18vw, 15rem);
   margin: 0 0 1.25rem;
   width: min(100%, 48rem);
   overflow: hidden;
@@ -119,12 +141,12 @@
 
 .mn-hero-nook img {
   display: block;
-  width: 122%;
+  width: 112%;
   max-width: none;
   height: 100%;
   object-fit: cover;
-  object-position: 72% 52%;
-  transform: translateX(-14%);
+  object-position: 66% 42%;
+  transform: translate(-8%, -4%);
 }
 
 .mn-hero-guide { display: flex; flex-wrap: wrap; gap: 0.45rem 0.9rem; max-width: 48rem; margin-top: 1.1rem; color: var(--mn-muted); font-size: 0.68rem; line-height: 1.35; }
@@ -138,11 +160,11 @@
 .mn-incense-wisps span:nth-child(3) { top: 70%; left: 38%; width: 15rem; height: 24rem; animation-delay: -15s; }
 
 @media (min-width: 768px) {
-  .mn-hero-nook { height: 10rem; }
+  .mn-hero-nook { height: clamp(11.5rem, 18vw, 15rem); }
 }
 
 @media (max-width: 640px) {
-  .mn-hero-nook { height: 6.5rem; margin-bottom: 1rem; }
+  .mn-hero-nook { height: 8.5rem; margin-bottom: 1rem; }
 }
 
 .mn-recipe-download {
@@ -346,4 +368,5 @@
   .mn-legal-note__items { grid-template-columns: minmax(0, 1fr); }
   .mn-hero-nook img { width: 100%; transform: none; }
   .mn-hero-guide { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.35rem; }
+  .mn-backstage__ads { grid-template-columns: minmax(0, 1fr); }
 }

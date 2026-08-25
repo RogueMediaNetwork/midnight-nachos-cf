@@ -6,7 +6,9 @@ import RecipeList from "./components/RecipeList";
 import StonerStories from "./components/StonerStories";
 import MidnightShop from "./components/MidnightShop";
 import MidnightArcade from "./components/MidnightArcade";
-import { FreshBatchLead, FreshBatchPocket, FreshBatchProvider, FreshBatchTicker, SponsorPocket, SponsorStrip } from "./components/FreshBatch";
+import { AdsProvider, FreshBatchLead, FreshBatchPocket, FreshBatchProvider, FreshBatchTicker, SponsorPocket, SponsorStrip } from "./components/FreshBatch";
+import AdManager from "./components/AdManager";
+import { useMidnightRadio } from "./hooks/useMidnightRadio";
 import { PRESET_RECIPES } from "./data/recipes";
 import { ChevronRight } from "lucide-react";
 
@@ -31,6 +33,8 @@ const HERO_GUIDE = [
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>("chef");
+  const [showBackstage, setShowBackstage] = useState(() => new URLSearchParams(window.location.search).get("backstage") === "1");
+  const { playing: musicPlaying, toggle: toggleMusic } = useMidnightRadio();
   const [cravingRecipeIndex, setCravingRecipeIndex] = useState(recipeIndexForHour);
   const [heroNookImage] = useState(() => HERO_NOOK_IMAGES[Math.floor(Math.random() * HERO_NOOK_IMAGES.length)]);
   const moods = [
@@ -74,7 +78,7 @@ export default function App() {
   const cravingRecipe = PRESET_RECIPES[cravingRecipeIndex];
 
   return (
-    <FreshBatchProvider>
+    <FreshBatchProvider><AdsProvider>
     <div id="app-root-container" data-mood={mood} className="relative min-h-screen bg-[#050505] text-[#e5e7eb] font-sans overflow-x-clip flex flex-col justify-between selection:bg-amber-500/30 selection:text-white">
       
       {/* Background Orbs (Trippy/Atmospheric Effect from Elegant Dark theme) */}
@@ -84,7 +88,7 @@ export default function App() {
       <div className="mn-incense-wisps" aria-hidden="true"><span /><span /><span /></div>
 
       {/* Navigation Header */}
-      <Header activeTab={activeTab} setActiveTab={setActiveTab} moodLabel={currentMood.label} cycleMood={cycleMood} />
+      <Header activeTab={activeTab} setActiveTab={setActiveTab} moodLabel={currentMood.label} cycleMood={cycleMood} musicPlaying={musicPlaying} toggleMusic={toggleMusic} />
       <FreshBatchTicker />
 
       {/* Main Container */}
@@ -223,8 +227,9 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <Footer />
+      <Footer onOpenBackstage={() => setShowBackstage(true)} />
+      {showBackstage ? <AdManager onClose={() => setShowBackstage(false)} /> : null}
     </div>
-    </FreshBatchProvider>
+    </AdsProvider></FreshBatchProvider>
   );
 }
