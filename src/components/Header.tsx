@@ -1,4 +1,4 @@
-import { ChefHat, BookOpen, MessageSquare, ShoppingBag, Flame, Gamepad2, Palette, Volume2, VolumeX } from "lucide-react";
+import { ChefHat, BookOpen, MessageSquare, ShoppingBag, Flame, Gamepad2, MapPinned, Palette, Volume2, VolumeX } from "lucide-react";
 
 interface HeaderProps {
   activeTab: string;
@@ -16,6 +16,7 @@ export default function Header({ activeTab, setActiveTab, moodLabel, cycleMood, 
     { id: "stories", label: "Stoner Stories", icon: MessageSquare, color: "text-pink-400" },
     { id: "shop", label: "Midnight Shop", icon: ShoppingBag, color: "text-sky-400" },
     { id: "arcade", label: "Bodega Arcade", icon: Gamepad2, color: "text-purple-400" },
+    { id: "finder", label: "Nearby Shops", icon: MapPinned, color: "text-lime-300" },
   ];
 
   return (

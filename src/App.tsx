@@ -6,6 +6,7 @@ import RecipeList from "./components/RecipeList";
 import StonerStories from "./components/StonerStories";
 import MidnightShop from "./components/MidnightShop";
 import MidnightArcade from "./components/MidnightArcade";
+import ShopFinder from "./components/ShopFinder";
 import { AdsProvider, FreshBatchLead, FreshBatchPocket, FreshBatchProvider, FreshBatchTicker, SponsorPocket, SponsorStrip } from "./components/FreshBatch";
 import AdManager from "./components/AdManager";
 import { useMidnightRadio } from "./hooks/useMidnightRadio";
@@ -29,6 +30,7 @@ const HERO_GUIDE = [
   ["Stories", "read the late-night confessional"],
   ["Shop", "peek at cozy gear and apparel"],
   ["Arcade", "play a tiny midnight game"],
+  ["Nearby Shops", "find dispensaries, smoke shops, gummies, and gear"],
 ];
 
 export default function App() {
@@ -171,6 +173,16 @@ export default function App() {
                 >
                   <span>Bodega Arcade</span>
                 </button>
+                <button
+                  onClick={() => setActiveTab("finder")}
+                  className={`rounded-full px-5 py-2.5 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+                    activeTab === "finder"
+                      ? "bg-lime-400 text-slate-950 shadow-lg shadow-lime-400/20"
+                      : "bg-white/5 hover:bg-white/10 text-white border border-white/10"
+                  }`}
+                >
+                  <span>Nearby Shops</span>
+                </button>
               </div>
               <div className="mn-hero-guide" aria-label="What each Midnight Nachos section does">
                 {HERO_GUIDE.map(([label, detail]) => <span key={label}><strong>{label}</strong> {detail}</span>)}
@@ -220,6 +232,7 @@ export default function App() {
           {activeTab === "stories" && <StonerStories />}
           {activeTab === "shop" && <MidnightShop />}
           {activeTab === "arcade" && <MidnightArcade />}
+          {activeTab === "finder" && <ShopFinder />}
         </section>
         <SponsorStrip />
         <FreshBatchPocket />
