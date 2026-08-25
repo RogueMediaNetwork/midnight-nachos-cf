@@ -23,18 +23,14 @@ async function fetchWithTimeout(url: string, init: RequestInit = {}, timeout = 8
 }
 
 async function coordinateForZip(zip: string): Promise<Coordinate | null> {
-  const endpoint = new URL("https://nominatim.openstreetmap.org/search");
-  endpoint.searchParams.set("postalcode", zip);
-  endpoint.searchParams.set("countrycodes", "us");
-  endpoint.searchParams.set("format", "jsonv2");
-  endpoint.searchParams.set("limit", "1");
-  const response = await fetchWithTimeout(endpoint.toString(), { headers: { Accept: "application/json", "Accept-Language": "en" } });
+  const response = await fetchWithTimeout(`https://api.zippopotam.us/us/${encodeURIComponent(zip)}`, { headers: { Accept: "application/json" } });
   if (!response.ok) throw new Error("Location lookup is unavailable right now.");
-  const locations = await response.json() as Array<{ lat?: string; lon?: string; display_name?: string }>;
-  const location = locations[0];
-  const latitude = Number(location?.lat);
-  const longitude = Number(location?.lon);
-  return isLatitude(latitude) && isLongitude(longitude) ? { latitude, longitude, area: location.display_name?.split(",").slice(0, 2).join(",") || `ZIP ${zip}` } : null;
+  const location = await response.json() as { places?: Array<{ latitude?: string; longitude?: string; "place name"?: string; "state abbreviation"?: string }> };
+  const place = location.places?.[0];
+  const latitude = Number(place?.latitude);
+  const longitude = Number(place?.longitude);
+  const area = [place?.["place name"], place?.["state abbreviation"]].filter(Boolean).join(", ");
+  return isLatitude(latitude) && isLongitude(longitude) ? { latitude, longitude, area: area || `ZIP ${zip}` } : null;
 }
 
 function distanceMiles(origin: Coordinate, latitude: number, longitude: number) {
@@ -100,7 +96,9 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
     if (!origin) return json({ error: "We could not find that ZIP code. Try another nearby ZIP." }, { status: 404 });
 
     const query = `[out:json][timeout:10];(nwr(around:${MAX_RADIUS_METERS},${origin.latitude},${origin.longitude})["shop"="cannabis"];nwr(around:${MAX_RADIUS_METERS},${origin.latitude},${origin.longitude})["shop"="tobacco"];nwr(around:${MAX_RADIUS_METERS},${origin.latitude},${origin.longitude})["shop"="vape"];nwr(around:${MAX_RADIUS_METERS},${origin.latitude},${origin.longitude})["shop"="herbalist"];nwr(around:${MAX_RADIUS_METERS},${origin.latitude},${origin.longitude})["name"~"${SEARCH_TERMS}",i];);out center tags 60;`;
-    const response = await fetchWithTimeout("https://overpass-api.de/api/interpreter", { method: "POST", headers: { "content-type": "application/x-www-form-urlencoded", Accept: "application/json" }, body: new URLSearchParams({ data: query }).toString() });
+    const overpassEndpoint = new URL("https://lz4.overpass-api.de/api/interpreter");
+    overpassEndpoint.searchParams.set("data", query);
+    const response = await fetchWithTimeout(overpassEndpoint.toString(), { headers: { Accept: "application/json", "User-Agent": "MidnightNachosDirectory/1.0 (+https://midnightnachos.com)" } }, 12_000);
     if (!response.ok) throw new Error("Directory search is temporarily unavailable.");
     const payload = await response.json() as { elements?: OverpassElement[] };
     const body = { listings: listingsFrom(payload.elements ?? [], origin), area: origin.area, source: "OpenStreetMap" };
