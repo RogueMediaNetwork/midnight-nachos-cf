@@ -6,13 +6,15 @@ import RecipeList from "./components/RecipeList";
 import StonerStories from "./components/StonerStories";
 import MidnightShop from "./components/MidnightShop";
 import MidnightArcade from "./components/MidnightArcade";
-import { MessageSquare, Flame, ChevronRight, Compass, ShoppingBag } from "lucide-react";
+import { FreshBatchLead, FreshBatchPocket, FreshBatchProvider, FreshBatchTicker, SponsorPocket } from "./components/FreshBatch";
+import { ChevronRight } from "lucide-react";
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>("chef");
 
   return (
-    <div id="app-root-container" className="relative min-h-screen bg-[#050505] text-[#e5e7eb] font-sans overflow-x-hidden flex flex-col justify-between selection:bg-amber-500/30 selection:text-white">
+    <FreshBatchProvider>
+    <div id="app-root-container" className="relative min-h-screen bg-[#050505] text-[#e5e7eb] font-sans overflow-x-clip flex flex-col justify-between selection:bg-amber-500/30 selection:text-white">
       
       {/* Background Orbs (Trippy/Atmospheric Effect from Elegant Dark theme) */}
       <div id="ambient-orb-top" className="absolute top-[-5%] left-[-5%] w-[400px] h-[400px] sm:w-[600px] sm:h-[600px] bg-purple-900/15 rounded-full blur-[140px] pointer-events-none z-0" />
@@ -21,6 +23,7 @@ export default function App() {
 
       {/* Navigation Header */}
       <Header activeTab={activeTab} setActiveTab={setActiveTab} />
+      <FreshBatchTicker />
 
       {/* Main Container */}
       <main className="relative z-10 flex-1 flex flex-col px-4 py-6 md:px-12 md:py-10 max-w-7xl mx-auto w-full">
@@ -103,29 +106,7 @@ export default function App() {
             {/* Quick-Glance Sidebar / Featured Widgets (From design layout) */}
             <div className="lg:col-span-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
               
-              {/* Feature Story Card Preview */}
-              <div 
-                onClick={() => setActiveTab("stories")}
-                className="bg-white/5 border border-white/10 p-5 rounded-3xl backdrop-blur-md hover:bg-white/10 transition-all cursor-pointer group"
-              >
-                <div className="flex justify-between items-start mb-3">
-                  <span className="text-[9px] uppercase tracking-widest text-pink-400 font-bold font-mono">
-                    Story Spotlight
-                  </span>
-                  <span className="text-[9px] text-slate-500 font-mono">Anonymous</span>
-                </div>
-                <p className="italic text-xs text-slate-300 line-clamp-3 mb-3 font-sans">
-                  &ldquo;Found my Apple TV remote frozen solid behind a tub of Ben & Jerry's Half Baked. I must have put it down to scoop with both hands, closed freezer and walked away...&rdquo;
-                </p>
-                <div className="h-[1px] bg-white/10 w-full mb-3" />
-                <div className="flex justify-between items-center text-[10px] text-slate-400">
-                  <span className="flex items-center gap-1 text-slate-500">
-                    <MessageSquare className="h-3.5 w-3.5" />
-                    <span>Read other stories</span>
-                  </span>
-                  <span className="text-pink-400 font-bold group-hover:translate-x-1 transition-transform">→</span>
-                </div>
-              </div>
+              <FreshBatchLead />
 
               {/* Feature Recipe Quick card */}
               <div 
@@ -152,6 +133,8 @@ export default function App() {
                 </div>
               </div>
 
+              <SponsorPocket />
+
             </div>
           </div>
         </section>
@@ -164,11 +147,13 @@ export default function App() {
           {activeTab === "shop" && <MidnightShop />}
           {activeTab === "arcade" && <MidnightArcade />}
         </section>
+        <FreshBatchPocket />
 
       </main>
 
       {/* Footer */}
       <Footer />
     </div>
+    </FreshBatchProvider>
   );
 }
