@@ -154,6 +154,27 @@ body {
   overflow-wrap: anywhere;
 }
 
+.fresh-batch-ad--wide {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--fresh-space-5);
+  margin-top: 2rem;
+  padding: calc(var(--fresh-space-5) * 1.15);
+}
+
+.fresh-batch-ad--wide h3 { max-width: 36rem; }
+
+.fresh-batch-ad__placement {
+  flex: 0 0 auto;
+  color: var(--fresh-wire);
+  font-family: var(--fresh-font-body);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
 .fresh-batch-lead h3 {
   margin: var(--fresh-space-3) 0 var(--fresh-space-2);
   color: var(--fresh-ink);
@@ -303,6 +324,8 @@ body {
     align-items: flex-start;
     flex-direction: column;
   }
+
+  .fresh-batch-ad--wide { align-items: flex-start; flex-direction: column; }
 
 }
 

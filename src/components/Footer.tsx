@@ -1,4 +1,5 @@
 import { Facebook, Flame, Heart, Instagram, MessageCircle } from "lucide-react";
+import { SponsorStrip } from "./FreshBatch";
 
 const SOCIAL_LINKS = [
   { label: "Facebook", icon: Facebook, href: "", note: "Facebook profile coming soon" },
@@ -27,11 +28,22 @@ export default function Footer() {
           </p>
         </div>
 
+        <SponsorStrip
+          placement="Closing credits"
+          headline="A good spot for a midnight-minded partner."
+          copy="For snacks, art, music, events, local spots, and useful things night owls actually like."
+        />
+
         <aside className="mn-legal-note" aria-label="Legal notice">
-          <strong>Good to know</strong>
-          <p>Midnight Nachos does not sell edible products directly. Shop items and outgoing links are provided for information and shopping convenience.</p>
-          <p>We may earn a small commission from qualifying gear links. This helps keep the server running and the cheese hot.</p>
-          <p>For adults in places where cannabis-related content is lawful. We do not endorse or encourage illegal products or activities; please know and follow your local laws.</p>
+          <div className="mn-legal-note__intro">
+            <strong>Good to know</strong>
+            <p>The small but important grown-up stuff.</p>
+          </div>
+          <div className="mn-legal-note__items">
+            <article><span>Shopping</span><p>Midnight Nachos does not sell edible products directly. Shop items and outgoing links are here for information and shopping convenience.</p></article>
+            <article><span>Links</span><p>Qualifying gear links may earn a small commission, helping keep the server running and the cheese hot.</p></article>
+            <article><span>Local laws</span><p>For adults where cannabis-related content is lawful. We do not endorse or encourage illegal products or activities.</p></article>
+          </div>
         </aside>
 
         <hr className="my-8 border-slate-900" />

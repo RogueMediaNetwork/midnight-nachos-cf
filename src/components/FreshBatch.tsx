@@ -169,3 +169,24 @@ export function SponsorPocket() {
     </aside>
   );
 }
+
+export function SponsorStrip({
+  placement = "After-hours shelf",
+  headline = "Put your good stuff in front of the night owls.",
+  copy = "A roomy home for a food, glass, art, event, or local business that fits the Midnight Nachos crowd.",
+}: {
+  placement?: string;
+  headline?: string;
+  copy?: string;
+}) {
+  return (
+    <aside className="fresh-batch-ad fresh-batch-ad--wide" aria-label="Advertising placement">
+      <div>
+        <span className="fresh-batch-ad-label">Ad space</span>
+        <h3>{headline}</h3>
+        <p>{copy}</p>
+      </div>
+      <span className="fresh-batch-ad__placement">{placement}</span>
+    </aside>
+  );
+}

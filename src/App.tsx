@@ -6,15 +6,33 @@ import RecipeList from "./components/RecipeList";
 import StonerStories from "./components/StonerStories";
 import MidnightShop from "./components/MidnightShop";
 import MidnightArcade from "./components/MidnightArcade";
-import { FreshBatchLead, FreshBatchPocket, FreshBatchProvider, FreshBatchTicker, SponsorPocket } from "./components/FreshBatch";
+import { FreshBatchLead, FreshBatchPocket, FreshBatchProvider, FreshBatchTicker, SponsorPocket, SponsorStrip } from "./components/FreshBatch";
 import { PRESET_RECIPES } from "./data/recipes";
 import { ChevronRight } from "lucide-react";
 
 const recipeIndexForHour = () => Math.floor(Date.now() / 3_600_000) % PRESET_RECIPES.length;
+const HERO_NOOK_IMAGES = [
+  "/images/editorial/midnight-nook-hero.png",
+  "/images/editorial/midnight-nook-reading.png",
+  "/images/editorial/midnight-nook-records.png",
+  "/images/editorial/midnight-nook-moon.png",
+  "/images/editorial/midnight-nook-craft.png",
+  "/images/editorial/midnight-nook-kitchen.png",
+  "/images/editorial/midnight-nook-balcony.png",
+];
+
+const HERO_GUIDE = [
+  ["Chef", "turn ingredients into a recipe"],
+  ["Recipes", "browse cozy things to make"],
+  ["Stories", "read the late-night confessional"],
+  ["Shop", "peek at cozy gear and apparel"],
+  ["Arcade", "play a tiny midnight game"],
+];
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>("chef");
   const [cravingRecipeIndex, setCravingRecipeIndex] = useState(recipeIndexForHour);
+  const [heroNookImage] = useState(() => HERO_NOOK_IMAGES[Math.floor(Math.random() * HERO_NOOK_IMAGES.length)]);
   const moods = [
     { id: "campfire", label: "Campfire" },
     { id: "citrus", label: "Citrus Peel" },
@@ -63,6 +81,7 @@ export default function App() {
       <div id="ambient-orb-top" className="absolute top-[-5%] left-[-5%] w-[400px] h-[400px] sm:w-[600px] sm:h-[600px] bg-purple-900/15 rounded-full blur-[140px] pointer-events-none z-0" />
       <div id="ambient-orb-bottom" className="absolute bottom-[10%] right-[-5%] w-[350px] h-[350px] sm:w-[500px] sm:h-[500px] bg-orange-900/10 rounded-full blur-[120px] pointer-events-none z-0" />
       <div id="ambient-orb-center" className="absolute top-[40%] left-[30%] w-[300px] h-[300px] bg-emerald-900/5 rounded-full blur-[130px] pointer-events-none z-0" />
+      <div className="mn-incense-wisps" aria-hidden="true"><span /><span /><span /></div>
 
       {/* Navigation Header */}
       <Header activeTab={activeTab} setActiveTab={setActiveTab} moodLabel={currentMood.label} cycleMood={cycleMood} />
@@ -73,12 +92,12 @@ export default function App() {
         
         {/* Universal Majestic Hero Section (Styled from Elegant Dark Theme) */}
         <section id="hero-showcase" className="mb-12 border-b border-white/5 pb-10">
-          <div className="grid gap-8 lg:grid-cols-12 items-center">
+          <div className="grid gap-8 lg:grid-cols-12 items-start">
             
             {/* Hero text */}
             <div className="lg:col-span-7 flex flex-col justify-center">
               <figure className="mn-hero-nook" aria-hidden="true">
-                <img src="/images/editorial/midnight-nook-hero.png" alt="" />
+                <img src={heroNookImage} alt="" />
               </figure>
               <span className="text-[10px] uppercase tracking-widest text-amber-500 font-bold font-mono mb-3 block">
                 MIDNIGHT NACHOS • EST. 4:20
@@ -149,6 +168,9 @@ export default function App() {
                   <span>Bodega Arcade</span>
                 </button>
               </div>
+              <div className="mn-hero-guide" aria-label="What each Midnight Nachos section does">
+                {HERO_GUIDE.map(([label, detail]) => <span key={label}><strong>{label}</strong> {detail}</span>)}
+              </div>
             </div>
 
             {/* Quick-Glance Sidebar / Featured Widgets (From design layout) */}
@@ -195,6 +217,7 @@ export default function App() {
           {activeTab === "shop" && <MidnightShop />}
           {activeTab === "arcade" && <MidnightArcade />}
         </section>
+        <SponsorStrip />
         <FreshBatchPocket />
 
       </main>

@@ -10,6 +10,7 @@
   --mn-glow-one: oklch(48% 0.13 48 / 30%);
   --mn-glow-two: oklch(44% 0.11 142 / 22%);
   --mn-font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --mn-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 [data-mood="citrus"] {
