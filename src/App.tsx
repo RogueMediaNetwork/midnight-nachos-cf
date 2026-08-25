@@ -77,6 +77,9 @@ export default function App() {
             
             {/* Hero text */}
             <div className="lg:col-span-7 flex flex-col justify-center">
+              <figure className="mn-hero-nook" aria-hidden="true">
+                <img src="/images/editorial/midnight-nook-hero.png" alt="" />
+              </figure>
               <span className="text-[10px] uppercase tracking-widest text-amber-500 font-bold font-mono mb-3 block">
                 MIDNIGHT NACHOS • EST. 4:20
               </span>
@@ -123,6 +126,8 @@ export default function App() {
                 >
                   <span>Stoner Stories</span>
                 </button>
+              </div>
+              <div className="mt-3 flex flex-wrap gap-3">
                 <button
                   onClick={() => setActiveTab("shop")}
                   className={`rounded-full px-5 py-2.5 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${

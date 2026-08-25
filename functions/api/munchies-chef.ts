@@ -8,6 +8,23 @@ interface Env {
 function getFallbackRecipe(ingredients: string[], headspace?: string): GeneratedMunchie {
   const low = ingredients.map(i => i.toLowerCase());
 
+  if (low.includes("tortilla") && low.includes("cheese") && low.includes("ramen") && low.includes("banana")) {
+    return {
+      name: "Flying Ramen Quesadilla with Banana Crunch",
+      description: "A crispy, cheesy ramen pocket with a sweet banana sidekick for the full late-night curveball.",
+      highnessRequired: headspace || "4/5 (Flying)",
+      ingredients: [...ingredients, "1 tsp butter or oil", "hot sauce or chili crisp (optional)"],
+      instructions: [
+        "Cook the ramen until just tender, then drain it well so the tortilla stays crisp.",
+        "Warm a skillet over medium heat with the butter or oil.",
+        "Scatter cheese over one half of the tortilla, add the ramen, then fold it into a half-moon.",
+        "Toast 2–3 minutes per side until the cheese melts and the tortilla gets golden.",
+        "Slice the banana alongside the quesadilla for a cool, sweet crunch; add hot sauce only to the ramen side if you want it spicy."
+      ],
+      trippyTip: "Keep the banana on the side—the contrast is the move, and it lets every ingredient have its own little solo."
+    };
+  }
+
   if (low.includes("cheese") && (low.includes("bread") || low.includes("tortilla"))) {
     return {
       name: "The Cosmic Meltdown Quesadilla",

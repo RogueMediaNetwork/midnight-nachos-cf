@@ -102,6 +102,32 @@
 
 .mn-legal-note p { margin: 0; max-width: 75ch; }
 
+.mn-hero-nook {
+  height: 7.5rem;
+  margin: 0 0 1.25rem;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--mn-accent) 28%, transparent);
+  border-radius: 1.3rem;
+  background: var(--mn-surface-raised);
+  box-shadow: 0 16px 42px color-mix(in srgb, var(--mn-bg) 50%, transparent);
+}
+
+.mn-hero-nook img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 62% 52%;
+}
+
+@media (min-width: 768px) {
+  .mn-hero-nook { height: 10rem; }
+}
+
+@media (max-width: 640px) {
+  .mn-hero-nook { height: 6.5rem; margin-bottom: 1rem; }
+}
+
 .mn-recipe-download {
   display: inline-flex;
   align-items: center;
