@@ -1,0 +1,16 @@
+name: Refresh Green Wire
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Pull the latest deduplicated cannabis stories
+        run: curl --fail --retry 3 --retry-all-errors --max-time 120 "https://green-wire-news.mike-663.workers.dev/api/stories?refresh=1"
