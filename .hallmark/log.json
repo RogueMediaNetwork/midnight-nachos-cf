@@ -1,6 +1,13 @@
 [
   {
     "date": "2026-08-25",
+    "macrostructure": "Mood-Cycled Playroom",
+    "theme": "hacky-sack campfire, citrus, garden, and daytrip palettes",
+    "enrichment": "animated star field",
+    "brief": "Make Couch Mode a real persistent palette switcher, turn Fresh Batch into a readable ticker, and repair Munchie Catcher timing."
+  },
+  {
+    "date": "2026-08-25",
     "macrostructure": "In-Stream Signals",
     "theme": "existing Midnight Nachos dark system",
     "enrichment": "none",

@@ -1,12 +1,13 @@
-import React from "react";
-import { ChefHat, BookOpen, MessageSquare, ShoppingBag, Flame, Gamepad2 } from "lucide-react";
+import { ChefHat, BookOpen, MessageSquare, ShoppingBag, Flame, Gamepad2, Palette } from "lucide-react";
 
 interface HeaderProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
+  moodLabel: string;
+  cycleMood: () => void;
 }
 
-export default function Header({ activeTab, setActiveTab }: HeaderProps) {
+export default function Header({ activeTab, setActiveTab, moodLabel, cycleMood }: HeaderProps) {
   const navItems = [
     { id: "chef", label: "Munchie Chef AI", icon: ChefHat, color: "text-amber-400" },
     { id: "recipes", label: "Cozy Recipes", icon: BookOpen, color: "text-emerald-400" },
@@ -58,14 +59,17 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
           })}
         </nav>
 
-        {/* Ambient Corner Status Badge */}
-        <div className="hidden items-center gap-2 rounded-full border border-slate-800 bg-slate-900/50 px-3 py-1 font-mono text-[10px] text-slate-400 md:flex">
-          <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
-          </span>
-          <span>Couch Mode: Fully Relaxed</span>
-        </div>
+        <button
+          type="button"
+          onClick={cycleMood}
+          className="mn-mood-switch hidden items-center gap-2 rounded-full border px-3 py-1.5 font-mono text-[10px] md:flex"
+          aria-label={`Change Couch Mode. Current mood: ${moodLabel}.`}
+          title="Change the Couch Mode colors"
+        >
+          <Palette className="h-3.5 w-3.5" aria-hidden="true" />
+          <span>Couch Mode</span>
+          <strong>{moodLabel}</strong>
+        </button>
       </div>
     </header>
   );

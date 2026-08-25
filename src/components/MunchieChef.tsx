@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Sparkles, HelpCircle, Utensils, RotateCcw, Plus, Check, Compass, AlertCircle, ChefHat } from "lucide-react";
+import { Sparkles, Utensils, RotateCcw, Plus, Check, Compass, AlertCircle, ChefHat } from "lucide-react";
 import { GeneratedMunchie } from "../types";
 
 const PRESET_INGREDIENTS = [
@@ -39,7 +39,7 @@ export default function MunchieChef() {
 
   // Rotate loading messages
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: ReturnType<typeof setInterval> | undefined;
     if (loading) {
       interval = setInterval(() => {
         setLoadingMsgIdx((prev) => (prev + 1) % LOADING_MESSAGES.length);
@@ -98,7 +98,7 @@ export default function MunchieChef() {
         throw new Error("The kitchen portal is currently offline. Please try again.");
       }
 
-      const data = await res.json();
+      const data = await res.json() as { recipe?: GeneratedMunchie; isMock?: boolean; error?: string };
       
       if (data.recipe) {
         setRecipe(data.recipe);
@@ -108,8 +108,8 @@ export default function MunchieChef() {
       } else {
         throw new Error("The kitchen portal returned an empty plate. Please try again.");
       }
-    } catch (err: any) {
-      setError(err.message || "Failed to summon the Midnight Chef. Try checking your ingredients.");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to summon the Munchie AI Chef. Try checking your ingredients.");
     } finally {
       setLoading(false);
     }
@@ -123,7 +123,7 @@ export default function MunchieChef() {
           <ChefHat className="h-6 w-6" />
         </div>
         <h2 className="text-3xl font-bold tracking-tight text-white md:text-4xl">
-          The Midnight <span className="text-amber-400">Chef AI</span>
+          <span className="text-amber-400">Munchie AI Chef</span>
         </h2>
         <p className="mx-auto mt-2 max-w-lg text-sm text-slate-400">
           What ingredients are staring back at you from your fridge right now? Select them below, and let the AI Chef build a trippy, glorious snack recipe.

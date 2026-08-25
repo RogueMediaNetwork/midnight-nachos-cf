@@ -68,20 +68,24 @@ function timeLabel(updatedAt?: string) {
 
 export function FreshBatchTicker() {
   const { stories, loading } = useFreshBatch();
-  const story = stories[0];
+  const tickerStories = stories.slice(0, 6);
 
   return (
     <aside className="fresh-batch-ticker" aria-label="Fresh Batch cannabis news ticker">
       <div className="fresh-batch-ticker__inner">
-        <Radio size={13} aria-hidden="true" />
+        <span className="fresh-batch-ticker__badge"><Radio size={13} aria-hidden="true" />
         <span className="fresh-batch-label">Fresh Batch</span>
-        {story ? (
-          <>
-            <a className="fresh-batch-ticker__story" href={story.url} target="_blank" rel="noreferrer">
-              {story.title}
-            </a>
-            <span className="fresh-batch-source">{story.source}</span>
-          </>
+        </span>
+        {tickerStories.length ? (
+          <div className="fresh-batch-ticker__viewport">
+            <div className="fresh-batch-ticker__track">
+              {[...tickerStories, ...tickerStories].map((story, index) => (
+                <a className="fresh-batch-ticker__story" href={story.url} target="_blank" rel="noreferrer" key={`${story.id}-${index}`}>
+                  <span>{story.title}</span><em>{story.source}</em>
+                </a>
+              ))}
+            </div>
+          </div>
         ) : (
           <span className="fresh-batch-ticker__fallback">
             {loading ? "Loading the late-night wire…" : "The next fresh story is loading soon."}

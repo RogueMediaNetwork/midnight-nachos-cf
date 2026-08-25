@@ -1,5 +1,10 @@
-import React from "react";
-import { Flame, Heart } from "lucide-react";
+import { Facebook, Flame, Heart, Instagram, MessageCircle } from "lucide-react";
+
+const SOCIAL_LINKS = [
+  { label: "Facebook", icon: Facebook, href: "", note: "Facebook profile coming soon" },
+  { label: "Instagram", icon: Instagram, href: "", note: "Instagram profile coming soon" },
+  { label: "Reddit", icon: MessageCircle, href: "https://www.reddit.com/r/trees/", note: "Read the r/trees community" },
+];
 
 export default function Footer() {
   return (
@@ -29,6 +34,18 @@ export default function Footer() {
         </div>
 
         <hr className="my-8 border-slate-900" />
+
+        <nav className="mb-7 flex flex-wrap items-center justify-center gap-3 md:justify-start" aria-label="Midnight Nachos social links">
+          {SOCIAL_LINKS.map(({ label, icon: Icon, href, note }) => href ? (
+            <a key={label} href={href} target="_blank" rel="noreferrer" className="mn-social-link" title={note}>
+              <Icon className="h-3.5 w-3.5" aria-hidden="true" /> {label}
+            </a>
+          ) : (
+            <span key={label} className="mn-social-link mn-social-link--pending" title={note} aria-label={note}>
+              <Icon className="h-3.5 w-3.5" aria-hidden="true" /> {label}
+            </span>
+          ))}
+        </nav>
 
         <div className="flex flex-col items-center justify-between gap-4 text-xs text-slate-600 sm:flex-row">
           <div>

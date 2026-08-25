@@ -1,0 +1,51 @@
+:root {
+  --mn-bg: oklch(15% 0.02 55);
+  --mn-surface: oklch(20% 0.03 55);
+  --mn-surface-raised: oklch(25% 0.045 55);
+  --mn-text: oklch(93% 0.025 90);
+  --mn-muted: oklch(70% 0.04 70);
+  --mn-accent: oklch(79% 0.15 72);
+  --mn-accent-soft: oklch(67% 0.13 55);
+  --mn-secondary: oklch(73% 0.13 150);
+  --mn-glow-one: oklch(48% 0.13 48 / 30%);
+  --mn-glow-two: oklch(44% 0.11 142 / 22%);
+}
+
+[data-mood="citrus"] {
+  --mn-bg: oklch(16% 0.025 105);
+  --mn-surface: oklch(22% 0.04 105);
+  --mn-surface-raised: oklch(28% 0.055 104);
+  --mn-text: oklch(95% 0.035 92);
+  --mn-muted: oklch(72% 0.055 97);
+  --mn-accent: oklch(84% 0.17 98);
+  --mn-accent-soft: oklch(70% 0.14 85);
+  --mn-secondary: oklch(77% 0.14 37);
+  --mn-glow-one: oklch(58% 0.14 91 / 28%);
+  --mn-glow-two: oklch(48% 0.13 32 / 24%);
+}
+
+[data-mood="garden"] {
+  --mn-bg: oklch(15% 0.028 145);
+  --mn-surface: oklch(20% 0.038 145);
+  --mn-surface-raised: oklch(26% 0.05 145);
+  --mn-text: oklch(94% 0.025 125);
+  --mn-muted: oklch(72% 0.055 144);
+  --mn-accent: oklch(77% 0.14 145);
+  --mn-accent-soft: oklch(65% 0.12 152);
+  --mn-secondary: oklch(76% 0.14 62);
+  --mn-glow-one: oklch(47% 0.14 146 / 28%);
+  --mn-glow-two: oklch(50% 0.12 66 / 22%);
+}
+
+[data-mood="daytrip"] {
+  --mn-bg: oklch(18% 0.035 215);
+  --mn-surface: oklch(23% 0.045 215);
+  --mn-surface-raised: oklch(29% 0.055 215);
+  --mn-text: oklch(95% 0.025 210);
+  --mn-muted: oklch(73% 0.045 220);
+  --mn-accent: oklch(78% 0.14 28);
+  --mn-accent-soft: oklch(66% 0.13 24);
+  --mn-secondary: oklch(75% 0.12 205);
+  --mn-glow-one: oklch(48% 0.14 212 / 28%);
+  --mn-glow-two: oklch(53% 0.13 28 / 22%);
+}

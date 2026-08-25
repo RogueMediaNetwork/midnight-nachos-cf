@@ -26,6 +26,25 @@ body {
   padding: var(--fresh-space-2) var(--fresh-space-4);
 }
 
+.fresh-batch-ticker__badge {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: var(--fresh-space-2);
+}
+
+.fresh-batch-ticker__viewport {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.fresh-batch-ticker__track {
+  display: flex;
+  width: max-content;
+  align-items: center;
+  animation: fresh-batch-marquee 58s linear infinite;
+}
+
 .fresh-batch-label,
 .fresh-batch-source,
 .fresh-batch-kicker,
@@ -48,8 +67,12 @@ body {
 }
 
 .fresh-batch-ticker__story {
-  min-width: 0;
-  overflow: hidden;
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: var(--fresh-space-3);
+  max-width: min(48rem, 72vw);
+  padding-right: 2.5rem;
   color: var(--fresh-ink);
   font-size: 0.76rem;
   font-weight: 700;
@@ -58,6 +81,21 @@ body {
   text-overflow: ellipsis;
   transition: color var(--fresh-dur-fast) var(--fresh-ease-out);
   white-space: nowrap;
+}
+
+.fresh-batch-ticker__story span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fresh-batch-ticker__story em {
+  flex: 0 0 auto;
+  color: var(--fresh-muted);
+  font-size: 0.62rem;
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 .fresh-batch-ticker__story:hover,
@@ -115,8 +153,8 @@ body {
 .fresh-batch-lead h3 {
   margin: var(--fresh-space-3) 0 var(--fresh-space-2);
   color: var(--fresh-ink);
-  font-size: 1.06rem;
-  line-height: 1.12;
+  font-size: 0.875rem;
+  line-height: 1.25;
 }
 
 .fresh-batch-lead p,
@@ -219,8 +257,13 @@ body {
 .fresh-batch-ad h3 {
   margin: var(--fresh-space-3) 0 var(--fresh-space-2);
   color: var(--fresh-ink);
-  font-size: 1.04rem;
-  line-height: 1.05;
+  font-size: 0.875rem;
+  line-height: 1.25;
+}
+
+@keyframes fresh-batch-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
 
 @media (max-width: 640px) {
@@ -247,6 +290,10 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .fresh-batch-ticker__track {
+    animation: none;
+  }
+
   .fresh-batch-ticker__story,
   .fresh-batch-link {
     transition: opacity var(--fresh-dur-fast) var(--fresh-ease-out);

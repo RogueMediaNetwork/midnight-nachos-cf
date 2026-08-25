@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Gamepad2, Trophy, RotateCcw, Play, Pause, Sparkles, Smile, Flame, Eye, Compass } from "lucide-react";
+import { Gamepad2, Trophy, RotateCcw, Play, Sparkles, Flame } from "lucide-react";
 
 // --- GAME 1: MUNCHIE CATCHER DATA ---
 interface FallingItem {
@@ -29,6 +29,15 @@ const BAD_ITEMS = [
   { emoji: "🥬", label: "Boring Lettuce", points: -5 }
 ];
 
+const STAR_FIELD = Array.from({ length: 42 }, (_, index) => ({
+  id: index,
+  x: (index * 37 + 11) % 100,
+  y: (index * 53 + 7) % 92,
+  size: 1 + (index % 3),
+  delay: (index % 9) * -0.7,
+  duration: 2.8 + (index % 5) * 0.55,
+}));
+
 export default function MidnightArcade() {
   const [activeGame, setActiveGame] = useState<"catcher" | "mandala">("catcher");
 
@@ -48,8 +57,9 @@ export default function MidnightArcade() {
   const [gameFeedback, setGameFeedback] = useState<{ id: number; text: string; x: number; y: number; color: string }[]>([]);
   const gameAreaRef = useRef<HTMLDivElement>(null);
   const gameLoopRef = useRef<number | null>(null);
-  const itemSpawnTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const itemSpawnTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const itemCounterRef = useRef(0);
+  const lastFrameTimeRef = useRef<number | null>(null);
 
   // Keyboard controls for game
   useEffect(() => {
@@ -85,6 +95,7 @@ export default function MidnightArcade() {
     setScore(0);
     setFallingItems([]);
     setGameFeedback([]);
+    lastFrameTimeRef.current = null;
     setIsPlaying(true);
   };
 
@@ -98,21 +109,26 @@ export default function MidnightArcade() {
       clearInterval(itemSpawnTimerRef.current);
       itemSpawnTimerRef.current = null;
     }
+    lastFrameTimeRef.current = null;
   };
 
   // Game ticks and Spawner
   useEffect(() => {
     if (isPlaying) {
       // Game physics ticker
-      const updatePhysics = () => {
+      const updatePhysics = (timestamp: number) => {
+        const previousFrame = lastFrameTimeRef.current ?? timestamp;
+        const elapsedSeconds = Math.min((timestamp - previousFrame) / 1000, 0.05);
+        lastFrameTimeRef.current = timestamp;
         setFallingItems((prevItems) => {
           const updated: FallingItem[] = [];
           for (let item of prevItems) {
-            const nextY = item.y + item.speed;
+            const nextY = item.y + item.speed * elapsedSeconds;
             
-            // Check collision with basket (around y = 88 to 94) using ref
+            // The basket occupies the lower fifth of the stage. Checking a range
+            // lets a player slide beneath a snack before it passes the rim.
             const matchesX = Math.abs(item.x - basketXRef.current) < 10;
-            const matchesY = nextY >= 86 && nextY <= 92;
+            const matchesY = nextY >= 80 && nextY <= 94;
 
             if (matchesX && matchesY) {
               // Caught item!
@@ -146,7 +162,7 @@ export default function MidnightArcade() {
         });
 
         // Decay feedback splash words
-        setGameFeedback((prev) => prev.map((f) => ({ ...f, y: f.y - 1 })).filter((f) => f.y > 40));
+        setGameFeedback((prev) => prev.map((f) => ({ ...f, y: f.y - 24 * elapsedSeconds })).filter((f) => f.y > 40));
 
         gameLoopRef.current = requestAnimationFrame(updatePhysics);
       };
@@ -170,7 +186,7 @@ export default function MidnightArcade() {
           emoji: preset.emoji,
           type: isGood ? "good" : "bad",
           points: preset.points,
-          speed: Math.random() * 0.8 + 1.2, // speed factor
+          speed: Math.random() * 7 + 17, // percentage points per second: ~4–6 seconds to the bowl
           label: preset.label
         };
 
@@ -198,7 +214,7 @@ export default function MidnightArcade() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [symmetry, setSymmetry] = useState(8);
   const [colorTheme, setColorTheme] = useState<"cheese" | "haze" | "acid" | "rainbow">("rainbow");
-  const [lineWidth, setLineWidth] = useState(4);
+  const [lineWidth] = useState(4);
   const [autoRotate, setAutoRotate] = useState(true);
   const rotationAngleRef = useRef(0);
   const isDrawingRef = useRef(false);
@@ -469,18 +485,28 @@ export default function MidnightArcade() {
               className="relative h-[380px] w-full rounded-2xl bg-[#030306] border border-white/5 overflow-hidden cursor-crosshair select-none"
             >
               {/* Star background decoration */}
-              <div className="absolute inset-0 opacity-20 pointer-events-none">
-                <div className="absolute top-10 left-1/4 text-xs">⭐</div>
-                <div className="absolute top-28 right-1/4 text-xs">✨</div>
-                <div className="absolute top-1/2 left-10 text-xs">💫</div>
-                <div className="absolute top-3/4 right-10 text-xs">⭐️</div>
+              <div className="arcade-starfield" aria-hidden="true">
+                {STAR_FIELD.map((star) => (
+                  <span
+                    className="arcade-star"
+                    key={star.id}
+                    style={{
+                      left: `${star.x}%`,
+                      top: `${star.y}%`,
+                      width: `${star.size}px`,
+                      height: `${star.size}px`,
+                      animationDelay: `${star.delay}s`,
+                      animationDuration: `${star.duration}s`,
+                    }}
+                  />
+                ))}
               </div>
 
               {/* Falling Emojis */}
               {fallingItems.map((item) => (
                 <div
                   key={item.id}
-                  className="absolute text-3xl transition-all duration-75 select-none animate-bounce-slow"
+                  className="arcade-falling-item absolute text-3xl select-none"
                   style={{
                     left: `${item.x}%`,
                     top: `${item.y}%`,

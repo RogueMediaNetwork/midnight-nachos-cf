@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import MunchieChef from "./components/MunchieChef";
@@ -11,10 +11,31 @@ import { ChevronRight } from "lucide-react";
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>("chef");
+  const moods = [
+    { id: "campfire", label: "Campfire" },
+    { id: "citrus", label: "Citrus Peel" },
+    { id: "garden", label: "Garden Glow" },
+    { id: "daytrip", label: "Daytrip" },
+  ] as const;
+  type MoodId = typeof moods[number]["id"];
+  const [mood, setMood] = useState<MoodId>(() => {
+    const savedMood = window.localStorage.getItem("midnight-nachos-mood");
+    return moods.some(option => option.id === savedMood) ? savedMood as MoodId : "campfire";
+  });
+  const currentMood = moods.find(option => option.id === mood) ?? moods[0];
+
+  useEffect(() => {
+    window.localStorage.setItem("midnight-nachos-mood", mood);
+  }, [mood]);
+
+  const cycleMood = () => {
+    const activeIndex = moods.findIndex(option => option.id === mood);
+    setMood(moods[(activeIndex + 1) % moods.length].id);
+  };
 
   return (
     <FreshBatchProvider>
-    <div id="app-root-container" className="relative min-h-screen bg-[#050505] text-[#e5e7eb] font-sans overflow-x-clip flex flex-col justify-between selection:bg-amber-500/30 selection:text-white">
+    <div id="app-root-container" data-mood={mood} className="relative min-h-screen bg-[#050505] text-[#e5e7eb] font-sans overflow-x-clip flex flex-col justify-between selection:bg-amber-500/30 selection:text-white">
       
       {/* Background Orbs (Trippy/Atmospheric Effect from Elegant Dark theme) */}
       <div id="ambient-orb-top" className="absolute top-[-5%] left-[-5%] w-[400px] h-[400px] sm:w-[600px] sm:h-[600px] bg-purple-900/15 rounded-full blur-[140px] pointer-events-none z-0" />
@@ -22,7 +43,7 @@ export default function App() {
       <div id="ambient-orb-center" className="absolute top-[40%] left-[30%] w-[300px] h-[300px] bg-emerald-900/5 rounded-full blur-[130px] pointer-events-none z-0" />
 
       {/* Navigation Header */}
-      <Header activeTab={activeTab} setActiveTab={setActiveTab} />
+      <Header activeTab={activeTab} setActiveTab={setActiveTab} moodLabel={currentMood.label} cycleMood={cycleMood} />
       <FreshBatchTicker />
 
       {/* Main Container */}
