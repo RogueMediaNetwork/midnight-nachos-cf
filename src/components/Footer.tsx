@@ -22,19 +22,17 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Guidelines and Disclaimers */}
-          <div className="max-w-md text-center text-[10px] leading-relaxed text-slate-600 md:text-right">
-            <p className="mb-2">
-              Disclaimer: Midnight Nachos does not sell edible products directly. All items in the Midnight Shop are either custom POD apparel manufactured on-demand by Printify or curated external Amazon Affiliate items.
-            </p>
-            <p>
-              We may earn a small commission from qualifying gear links. This helps keep our server running and our cheese hot.
-            </p>
-            <p className="mt-2">
-              Midnight Nachos is for adults in places where cannabis-related content is lawful. We do not sell, endorse, or encourage illegal products or activities; please know and follow your local laws.
-            </p>
-          </div>
+          <p className="max-w-md text-center text-xs leading-relaxed text-slate-500 md:text-right">
+            Late-night recipes, community stories, and gear for cozy people with excellent snack instincts.
+          </p>
         </div>
+
+        <aside className="mn-legal-note" aria-label="Legal notice">
+          <strong>Good to know</strong>
+          <p>Midnight Nachos does not sell edible products directly. Shop items and outgoing links are provided for information and shopping convenience.</p>
+          <p>We may earn a small commission from qualifying gear links. This helps keep the server running and the cheese hot.</p>
+          <p>For adults in places where cannabis-related content is lawful. We do not endorse or encourage illegal products or activities; please know and follow your local laws.</p>
+        </aside>
 
         <hr className="my-8 border-slate-900" />
 

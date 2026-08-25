@@ -77,6 +77,74 @@
 .mn-social-link:hover { color: var(--mn-accent); }
 .mn-social-link--pending { cursor: default; opacity: 0.62; }
 
+.mn-legal-note {
+  display: grid;
+  grid-template-columns: minmax(0, 10rem) minmax(0, 1fr);
+  gap: 0.65rem 1.25rem;
+  margin-top: 2.25rem;
+  padding: 1.1rem 1.2rem;
+  border: 1px solid color-mix(in oklch, var(--mn-text) 15%, transparent);
+  border-radius: 1rem;
+  background: var(--mn-surface);
+  color: var(--mn-muted);
+  font-size: 0.7rem;
+  line-height: 1.55;
+}
+
+.mn-legal-note strong {
+  grid-row: span 3;
+  color: var(--mn-accent);
+  font-family: var(--mn-font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mn-legal-note p { margin: 0; max-width: 75ch; }
+
+.mn-recipe-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.9rem;
+  border: 1px solid color-mix(in oklch, var(--mn-accent) 52%, transparent);
+  border-radius: 999px;
+  background: var(--mn-surface);
+  color: var(--mn-accent);
+  cursor: pointer;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+
+.mn-recipe-download:hover { background: var(--mn-surface-raised); color: var(--mn-text); }
+.mn-recipe-download:active { background: var(--mn-bg); }
+.mn-recipe-download:focus-visible { outline: 3px solid var(--mn-accent); outline-offset: 3px; }
+
+.mn-chef-ad {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 1rem;
+  padding: 1rem 1.15rem;
+  border: 1px dashed color-mix(in oklch, var(--mn-text) 24%, transparent);
+  border-radius: 1rem;
+  background: var(--mn-surface);
+  color: var(--mn-muted);
+}
+
+.mn-chef-ad span {
+  color: var(--mn-accent);
+  font-family: var(--mn-font-mono);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.mn-chef-ad strong { color: var(--mn-text); font-size: 0.82rem; }
+.mn-chef-ad p { margin: 0; font-size: 0.7rem; line-height: 1.5; }
+
 .arcade-starfield { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
 .arcade-star {
   position: absolute;
@@ -222,4 +290,6 @@
 @media (max-width: 640px) {
   .story-art { flex-basis: 5rem; width: 5rem; border-radius: 0.8rem; }
   .recipe-art { aspect-ratio: 16 / 8; }
+  .mn-legal-note { grid-template-columns: minmax(0, 1fr); gap: 0.55rem; }
+  .mn-legal-note strong { grid-row: auto; }
 }

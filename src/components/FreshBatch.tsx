@@ -138,9 +138,12 @@ export function FreshBatchPocket() {
       <div className="fresh-batch-pocket__head">
         <div>
           <span className="fresh-batch-kicker">A little something fresh</span>
-          <h2 id="fresh-batch-pocket-title">Two more from the wire <span>(Warning: good and bad vibes included.)</span></h2>
+          <h2 id="fresh-batch-pocket-title">Two more from the wire</h2>
+          <div className="fresh-batch-pocket__meta">
+            <span className="fresh-batch-pocket__warning">Warning: good and bad vibes included.</span>
+            <span className="fresh-batch-pocket__updated">{timeLabel(updatedAt)} · deduped</span>
+          </div>
         </div>
-        <span className="fresh-batch-pocket__updated">{timeLabel(updatedAt)} · deduped</span>
       </div>
       <div className="fresh-batch-pocket__stories">
         {picks.map(story => (

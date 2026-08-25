@@ -7,15 +7,22 @@ import StonerStories from "./components/StonerStories";
 import MidnightShop from "./components/MidnightShop";
 import MidnightArcade from "./components/MidnightArcade";
 import { FreshBatchLead, FreshBatchPocket, FreshBatchProvider, FreshBatchTicker, SponsorPocket } from "./components/FreshBatch";
+import { PRESET_RECIPES } from "./data/recipes";
 import { ChevronRight } from "lucide-react";
+
+const recipeIndexForHour = () => Math.floor(Date.now() / 3_600_000) % PRESET_RECIPES.length;
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>("chef");
+  const [cravingRecipeIndex, setCravingRecipeIndex] = useState(recipeIndexForHour);
   const moods = [
     { id: "campfire", label: "Campfire" },
     { id: "citrus", label: "Citrus Peel" },
     { id: "garden", label: "Garden Glow" },
     { id: "daytrip", label: "Daytrip" },
+    { id: "berry", label: "Berry Patch" },
+    { id: "tide", label: "Tide Pool" },
+    { id: "canyon", label: "Canyon Glow" },
   ] as const;
   type MoodId = typeof moods[number]["id"];
   const [mood, setMood] = useState<MoodId>(() => {
@@ -28,10 +35,25 @@ export default function App() {
     window.localStorage.setItem("midnight-nachos-mood", mood);
   }, [mood]);
 
+  useEffect(() => {
+    const refreshCravingHack = () => setCravingRecipeIndex(recipeIndexForHour());
+    const millisecondsUntilNextHour = 3_600_000 - (Date.now() % 3_600_000) + 50;
+    let hourly: number | undefined;
+    const nextHour = window.setTimeout(() => {
+      refreshCravingHack();
+      hourly = window.setInterval(refreshCravingHack, 3_600_000);
+    }, millisecondsUntilNextHour);
+    return () => {
+      window.clearTimeout(nextHour);
+      if (hourly) window.clearInterval(hourly);
+    };
+  }, []);
+
   const cycleMood = () => {
     const activeIndex = moods.findIndex(option => option.id === mood);
     setMood(moods[(activeIndex + 1) % moods.length].id);
   };
+  const cravingRecipe = PRESET_RECIPES[cravingRecipeIndex];
 
   return (
     <FreshBatchProvider>
@@ -139,13 +161,13 @@ export default function App() {
                     <span className="text-[9px] uppercase tracking-widest text-emerald-400 font-bold font-mono">
                       Craving Hack
                     </span>
-                    <span className="text-[9px] text-emerald-500 font-mono">Easy (No Heat)</span>
+                    <span className="text-[9px] text-emerald-500 font-mono">{cravingRecipe.difficulty}</span>
                   </div>
                   <h3 className="text-sm font-bold text-white mb-1 group-hover:text-emerald-300 transition-colors">
-                    Peanut Butter Pickle Tostadas
+                    {cravingRecipe.name}
                   </h3>
                   <p className="text-[10px] text-slate-400 leading-relaxed mb-3">
-                    Don't knock it until you try it. The sweet sticky peanut butter balanced by sour crunchy cold dill pickles...
+                    {cravingRecipe.description}
                   </p>
                 </div>
                 <div className="flex items-center justify-between text-[10px] text-emerald-400 pt-2 border-t border-white/5">

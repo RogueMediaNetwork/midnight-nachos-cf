@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Sparkles, Utensils, RotateCcw, Plus, Check, Compass, AlertCircle, ChefHat } from "lucide-react";
+import { Sparkles, Utensils, RotateCcw, Plus, Check, Compass, AlertCircle, ChefHat, Download } from "lucide-react";
 import { GeneratedMunchie } from "../types";
 
 const PRESET_INGREDIENTS = [
@@ -113,6 +113,52 @@ export default function MunchieChef() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const downloadRecipePdf = async () => {
+    if (!recipe) return;
+    const { jsPDF } = await import("jspdf");
+    const pdf = new jsPDF({ unit: "pt", format: "letter" });
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const margin = 48;
+    const contentWidth = pageWidth - margin * 2;
+    let cursor = margin;
+    const write = (text: string, size: number, emphasis = false, gap = 10) => {
+      pdf.setFont("helvetica", emphasis ? "bold" : "normal");
+      pdf.setFontSize(size);
+      const lines = pdf.splitTextToSize(text, contentWidth) as string[];
+      const height = lines.length * (size + 4);
+      if (cursor + height > pageHeight - margin) {
+        pdf.addPage();
+        cursor = margin;
+      }
+      pdf.text(lines, margin, cursor);
+      cursor += height + gap;
+    };
+
+    pdf.setFillColor(44, 31, 14);
+    pdf.rect(0, 0, pageWidth, 94, "F");
+    pdf.setTextColor(255, 221, 112);
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(11);
+    pdf.text("MIDNIGHT NACHOS · MUNCHIE AI CHEF", margin, 34);
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFontSize(22);
+    pdf.text(recipe.name, margin, 67);
+    cursor = 126;
+    pdf.setTextColor(47, 35, 18);
+    write(recipe.description, 11, false, 18);
+    write(`Vibe: ${recipe.highnessRequired}`, 10, true, 15);
+    write("INGREDIENTS", 11, true, 7);
+    recipe.ingredients.forEach(ingredient => write(`• ${ingredient}`, 10, false, 3));
+    cursor += 10;
+    write("METHOD", 11, true, 7);
+    recipe.instructions.forEach((instruction, index) => write(`${index + 1}. ${instruction}`, 10, false, 5));
+    cursor += 10;
+    write("CHEF'S TRIPPY TIP", 11, true, 7);
+    write(recipe.trippyTip, 10, false, 0);
+    pdf.save(`${recipe.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")}-midnight-nachos.pdf`);
   };
 
   return (
@@ -353,6 +399,15 @@ export default function MunchieChef() {
                   {recipe.name}
                 </h3>
 
+                <button
+                  type="button"
+                  onClick={downloadRecipePdf}
+                  className="mn-recipe-download"
+                >
+                  <Download className="h-3.5 w-3.5" aria-hidden="true" />
+                  Download recipe PDF
+                </button>
+
                 {/* Description */}
                 <p className="text-xs text-slate-400 italic mb-5 leading-relaxed">
                   &ldquo;{recipe.description}&rdquo;
@@ -401,6 +456,13 @@ export default function MunchieChef() {
                 </p>
               </div>
             </div>
+          )}
+          {recipe && (
+            <aside className="mn-chef-ad" aria-label="Advertising placement">
+              <span>Ad space</span>
+              <strong>Late-night brand goes here.</strong>
+              <p>Food, glass, art, events, and the other things people reach for after midnight.</p>
+            </aside>
           )}
         </div>
       </div>

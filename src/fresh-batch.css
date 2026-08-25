@@ -45,8 +45,7 @@ body {
   animation: fresh-batch-marquee 58s linear infinite;
 }
 
-.fresh-batch-ticker__viewport:hover .fresh-batch-ticker__track,
-.fresh-batch-ticker__viewport:focus-within .fresh-batch-ticker__track {
+.fresh-batch-ticker__viewport:hover .fresh-batch-ticker__track {
   animation-play-state: paused;
 }
 
@@ -217,8 +216,14 @@ body {
   line-height: 1;
 }
 
-.fresh-batch-pocket h2 span {
-  display: inline-block;
+.fresh-batch-pocket__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fresh-space-2);
+  margin-top: var(--fresh-space-2);
+}
+
+.fresh-batch-pocket__warning {
   color: var(--fresh-muted);
   font-family: var(--fresh-font-body);
   font-size: 0.72rem;
@@ -229,7 +234,6 @@ body {
 .fresh-batch-pocket__updated {
   color: var(--fresh-muted);
   font-size: 0.68rem;
-  text-align: right;
 }
 
 .fresh-batch-pocket__stories {
@@ -300,9 +304,6 @@ body {
     flex-direction: column;
   }
 
-  .fresh-batch-pocket__updated {
-    text-align: left;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
