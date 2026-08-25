@@ -36,7 +36,7 @@ const HERO_GUIDE = [
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>("chef");
   const [showBackstage, setShowBackstage] = useState(() => new URLSearchParams(window.location.search).get("backstage") === "1");
-  const { playing: musicPlaying, toggle: toggleMusic } = useMidnightRadio();
+  const { playing: musicPlaying, unavailable: musicUnavailable, toggle: toggleMusic } = useMidnightRadio();
   const [cravingRecipeIndex, setCravingRecipeIndex] = useState(recipeIndexForHour);
   const [heroNookImage] = useState(() => HERO_NOOK_IMAGES[Math.floor(Math.random() * HERO_NOOK_IMAGES.length)]);
   const moods = [
@@ -90,7 +90,7 @@ export default function App() {
       <div className="mn-incense-wisps" aria-hidden="true"><span /><span /><span /></div>
 
       {/* Navigation Header */}
-      <Header activeTab={activeTab} setActiveTab={setActiveTab} moodLabel={currentMood.label} cycleMood={cycleMood} musicPlaying={musicPlaying} toggleMusic={toggleMusic} />
+      <Header activeTab={activeTab} setActiveTab={setActiveTab} moodLabel={currentMood.label} cycleMood={cycleMood} musicPlaying={musicPlaying} musicUnavailable={musicUnavailable} toggleMusic={toggleMusic} />
       <FreshBatchTicker />
 
       {/* Main Container */}

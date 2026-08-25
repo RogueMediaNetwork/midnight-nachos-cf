@@ -6,10 +6,11 @@ interface HeaderProps {
   moodLabel: string;
   cycleMood: () => void;
   musicPlaying: boolean;
+  musicUnavailable: boolean;
   toggleMusic: () => void;
 }
 
-export default function Header({ activeTab, setActiveTab, moodLabel, cycleMood, musicPlaying, toggleMusic }: HeaderProps) {
+export default function Header({ activeTab, setActiveTab, moodLabel, cycleMood, musicPlaying, musicUnavailable, toggleMusic }: HeaderProps) {
   const navItems = [
     { id: "chef", label: "Munchie Chef AI", icon: ChefHat, color: "text-amber-400" },
     { id: "recipes", label: "Cozy Recipes", icon: BookOpen, color: "text-emerald-400" },
@@ -63,8 +64,8 @@ export default function Header({ activeTab, setActiveTab, moodLabel, cycleMood, 
         </nav>
 
         <div className="flex items-center gap-2">
-        <button type="button" onClick={toggleMusic} aria-pressed={musicPlaying} className="mn-mood-switch flex items-center gap-2 rounded-full border px-3 py-1.5 font-mono text-[10px]" title="Play or pause original Midnight Radio">
-          {musicPlaying ? <Volume2 className="h-3.5 w-3.5" aria-hidden="true" /> : <VolumeX className="h-3.5 w-3.5" aria-hidden="true" />}<span>Midnight Radio</span><strong>{musicPlaying ? "On" : "Off"}</strong>
+        <button type="button" onClick={toggleMusic} aria-pressed={musicPlaying} className="mn-mood-switch flex items-center gap-2 rounded-full border px-3 py-1.5 font-mono text-[10px]" title="Play or pause the original Midnight Radio mix">
+          {musicPlaying ? <Volume2 className="h-3.5 w-3.5" aria-hidden="true" /> : <VolumeX className="h-3.5 w-3.5" aria-hidden="true" />}<span>Midnight Radio</span><strong>{musicUnavailable ? "Try again" : musicPlaying ? "On" : "Off"}</strong>
         </button>
         <button
           type="button"

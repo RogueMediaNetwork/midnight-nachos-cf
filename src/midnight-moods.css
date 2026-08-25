@@ -247,7 +247,13 @@
 .mn-shop-finder__place strong { font-size: .82rem; line-height: 1.25; }
 .mn-shop-finder__place div > span { margin-top: .18rem; color: var(--mn-accent); font-family: var(--mn-font-mono); font-size: .6rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
 .mn-shop-finder__place p { margin: .26rem 0 0; color: var(--mn-muted); font-size: .68rem; line-height: 1.35; }
+.mn-shop-finder__place-meta { display: flex !important; flex-wrap: wrap; align-items: center; gap: .25rem .45rem; color: var(--mn-text) !important; }
+.mn-shop-finder__place-meta svg { width: .75rem; height: .75rem; color: var(--mn-accent); }
 .mn-shop-finder__place > svg { width: 1rem; color: var(--mn-muted); }
+.mn-shop-finder__maps-link { display: inline-flex; align-items: center; justify-self: start; gap: .45rem; color: var(--mn-accent); font-size: .72rem; font-weight: 800; text-decoration: none; text-underline-offset: .22rem; }
+.mn-shop-finder__maps-link:hover { color: var(--mn-text); text-decoration: underline; }
+.mn-shop-finder__maps-link:focus-visible { outline: 3px solid var(--mn-accent); outline-offset: 3px; }
+.mn-shop-finder__maps-link svg { width: .9rem; height: .9rem; }
 .mn-shop-finder__fineprint { margin: .1rem 0 0; color: var(--mn-muted); font-size: .64rem; line-height: 1.5; }
 
 .arcade-starfield { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }

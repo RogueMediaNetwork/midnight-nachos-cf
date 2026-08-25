@@ -1,8 +1,9 @@
-interface Env { STORIES_KV: KVNamespace; }
+interface Env { STORIES_KV: KVNamespace; GOOGLE_PLACES_API_KEY?: string; }
 
 type Coordinate = { latitude: number; longitude: number; area: string };
 type PhotonFeature = { geometry?: { coordinates?: [number, number] }; properties?: Record<string, string | number | undefined> };
-type DirectoryListing = { id: string; name: string; kind: string; address: string; distanceMiles: number; latitude: number; longitude: number };
+type DirectoryListing = { id: string; name: string; kind: string; address: string; distanceMiles: number; latitude: number; longitude: number; mapUrl?: string; phone?: string; rating?: number; ratingCount?: number; openNow?: boolean };
+type GooglePlace = { id?: string; displayName?: { text?: string }; formattedAddress?: string; location?: { latitude?: number; longitude?: number }; googleMapsUri?: string; primaryTypeDisplayName?: { text?: string }; types?: string[]; nationalPhoneNumber?: string; rating?: number; userRatingCount?: number; currentOpeningHours?: { openNow?: boolean } };
 
 const CACHE_SECONDS = 60 * 60;
 const DIRECTORY_TERMS = ["dispensary", "smoke shop", "vape shop", "cbd", "hemp", "gummies"];
@@ -68,6 +69,28 @@ function listingsFrom(features: PhotonFeature[], origin: Coordinate) {
   return [...unique.values()].sort((left, right) => left.distanceMiles - right.distanceMiles).slice(0, 18);
 }
 
+async function googleListings(origin: Coordinate, key: string) {
+  const fieldMask = "places.id,places.displayName,places.formattedAddress,places.location,places.googleMapsUri,places.primaryTypeDisplayName,places.types,places.nationalPhoneNumber,places.rating,places.userRatingCount,places.currentOpeningHours";
+  const responses = await Promise.all(DIRECTORY_TERMS.map(async term => {
+    const response = await fetchWithTimeout("https://places.googleapis.com/v1/places:searchText", {
+      method: "POST",
+      headers: { "content-type": "application/json", "X-Goog-Api-Key": key, "X-Goog-FieldMask": fieldMask },
+      body: JSON.stringify({ textQuery: `${term} near ${origin.area}`, maxResultCount: 20, languageCode: "en", regionCode: "US", locationBias: { circle: { center: { latitude: origin.latitude, longitude: origin.longitude }, radius: 30_000 } } }),
+    }, 12_000);
+    if (!response.ok) throw new Error("Google Places is temporarily unavailable.");
+    return response.json() as Promise<{ places?: GooglePlace[] }>;
+  }));
+  const unique = new Map<string, DirectoryListing>();
+  for (const place of responses.flatMap(response => response.places ?? [])) {
+    const latitude = place.location?.latitude;
+    const longitude = place.location?.longitude;
+    const name = place.displayName?.text;
+    if (!place.id || !name || !isLatitude(latitude ?? NaN) || !isLongitude(longitude ?? NaN)) continue;
+    unique.set(place.id, { id: place.id, name, kind: place.primaryTypeDisplayName?.text || place.types?.[0]?.replace(/_/g, " ") || "Local shop", address: place.formattedAddress || "", distanceMiles: distanceMiles(origin, latitude!, longitude!), latitude: latitude!, longitude: longitude!, mapUrl: place.googleMapsUri, phone: place.nationalPhoneNumber, rating: place.rating, ratingCount: place.userRatingCount, openNow: place.currentOpeningHours?.openNow });
+  }
+  return [...unique.values()].sort((left, right) => left.distanceMiles - right.distanceMiles).slice(0, 30);
+}
+
 function photonUrl(origin: Coordinate, query: string) {
   const latitudeDelta = 0.12;
   const longitudeDelta = Math.min(0.22, latitudeDelta / Math.max(Math.cos(origin.latitude * Math.PI / 180), 0.25));
@@ -92,7 +115,7 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
   try {
     if (zip) {
       if (!/^\d{5}(?:-\d{4})?$/.test(zip)) return json({ error: "Use a five-digit U.S. ZIP code." }, { status: 400 });
-      cacheKey = `nearby-shops:zip:${zip}`;
+      cacheKey = `nearby-shops:${env.GOOGLE_PLACES_API_KEY ? "google" : "public"}:zip:${zip}`;
       const cached = await env.STORIES_KV.get<unknown>(cacheKey, "json");
       if (cached) return json(cached, { headers: { "x-directory-cache": "HIT" } });
       origin = await coordinateForZip(zip);
@@ -100,19 +123,21 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
       if (!isLatitude(latitude) || !isLongitude(longitude)) return json({ error: "Share a location or enter a U.S. ZIP code." }, { status: 400 });
       const roundedLatitude = latitude.toFixed(2);
       const roundedLongitude = longitude.toFixed(2);
-      cacheKey = `nearby-shops:point:${roundedLatitude}:${roundedLongitude}`;
+      cacheKey = `nearby-shops:${env.GOOGLE_PLACES_API_KEY ? "google" : "public"}:point:${roundedLatitude}:${roundedLongitude}`;
       const cached = await env.STORIES_KV.get<unknown>(cacheKey, "json");
       if (cached) return json(cached, { headers: { "x-directory-cache": "HIT" } });
       origin = { latitude, longitude, area: "your current area" };
     }
     if (!origin) return json({ error: "We could not find that ZIP code. Try another nearby ZIP." }, { status: 404 });
 
-    const responses = await Promise.all(DIRECTORY_TERMS.map(async term => {
-      const response = await fetchWithTimeout(photonUrl(origin!, term), { headers: { Accept: "application/json" } }, 8_000);
-      if (!response.ok) throw new Error("Directory search is temporarily unavailable.");
-      return response.json() as Promise<{ features?: PhotonFeature[] }>;
-    }));
-    const body = { listings: listingsFrom(responses.flatMap(response => response.features ?? []), origin), area: origin.area, source: "OpenStreetMap via Photon" };
+    const listings = env.GOOGLE_PLACES_API_KEY
+      ? await googleListings(origin, env.GOOGLE_PLACES_API_KEY)
+      : listingsFrom((await Promise.all(DIRECTORY_TERMS.map(async term => {
+          const response = await fetchWithTimeout(photonUrl(origin!, term), { headers: { Accept: "application/json" } }, 8_000);
+          if (!response.ok) throw new Error("Directory search is temporarily unavailable.");
+          return response.json() as Promise<{ features?: PhotonFeature[] }>;
+        }))).flatMap(response => response.features ?? []), origin);
+    const body = { listings, area: origin.area, source: env.GOOGLE_PLACES_API_KEY ? "Google Places" : "OpenStreetMap via Photon", fullSearchUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`CBD, smoke shop, dispensary, vape shop, glass shop near ${origin.area}`)}` };
     await env.STORIES_KV.put(cacheKey, JSON.stringify(body), { expirationTtl: CACHE_SECONDS });
     return json(body, { headers: { "x-directory-cache": "MISS" } });
   } catch (error) {
