@@ -49,6 +49,8 @@ export default function Footer({ onOpenBackstage }: { onOpenBackstage: () => voi
 
         <hr className="my-8 border-slate-900" />
 
+        <p className="mb-5 max-w-3xl text-xs leading-relaxed text-slate-500">Midnight Radio: “Psychedelic Crater” by Kevin MacLeod (incompetech.com), licensed under CC BY 4.0.</p>
+
         <nav className="mb-7 flex flex-wrap items-center justify-center gap-3 md:justify-start" aria-label="Midnight Nachos social links">
           {SOCIAL_LINKS.map(({ label, icon: Icon, href, note }) => href ? (
             <a key={label} href={href} target="_blank" rel="noreferrer" className="mn-social-link" title={note}>

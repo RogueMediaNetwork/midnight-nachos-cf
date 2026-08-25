@@ -22,7 +22,7 @@ export default function Header({ activeTab, setActiveTab, moodLabel, cycleMood, 
 
   return (
     <header id="app-header" className="sticky top-0 z-50 w-full border-b border-slate-800 bg-slate-950/90 backdrop-blur-md">
-      <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-4 sm:flex-row sm:py-3">
+      <div className="mx-auto flex max-w-7xl flex-col items-center gap-4 px-4 py-4 md:grid md:grid-cols-[auto_minmax(0,1fr)_auto] md:items-center md:gap-3 md:py-3">
         {/* Logo and Brand */}
         <div 
           onClick={() => setActiveTab("chef")}
@@ -41,7 +41,7 @@ export default function Header({ activeTab, setActiveTab, moodLabel, cycleMood, 
         </div>
 
         {/* Navigation Tabs */}
-        <nav className="flex flex-wrap items-center justify-center gap-1 sm:gap-2">
+        <nav className="grid w-full grid-cols-2 items-center gap-1 sm:grid-cols-3 md:gap-1.5 xl:grid-cols-6" aria-label="Midnight Nachos sections">
           {navItems.map((item) => {
             const isActive = activeTab === item.id;
             const Icon = item.icon;
@@ -50,7 +50,7 @@ export default function Header({ activeTab, setActiveTab, moodLabel, cycleMood, 
                 key={item.id}
                 id={`nav-${item.id}`}
                 onClick={() => setActiveTab(item.id)}
-                className={`flex items-center gap-2 rounded-full px-4 py-2 text-xs font-medium transition-all duration-300 ${
+                className={`flex items-center justify-center gap-2 whitespace-nowrap rounded-full px-2.5 py-2 text-xs font-medium transition-all duration-300 ${
                   isActive
                     ? "bg-slate-800 text-white shadow-lg shadow-black/40 ring-1 ring-slate-700"
                     : "text-slate-400 hover:bg-slate-900 hover:text-slate-200"
@@ -63,7 +63,7 @@ export default function Header({ activeTab, setActiveTab, moodLabel, cycleMood, 
           })}
         </nav>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 md:justify-self-end">
         <button type="button" onClick={toggleMusic} aria-pressed={musicPlaying} className="mn-mood-switch flex items-center gap-2 rounded-full border px-3 py-1.5 font-mono text-[10px]" title="Play or pause the original Midnight Radio mix">
           {musicPlaying ? <Volume2 className="h-3.5 w-3.5" aria-hidden="true" /> : <VolumeX className="h-3.5 w-3.5" aria-hidden="true" />}<span>Midnight Radio</span><strong>{musicUnavailable ? "Try again" : musicPlaying ? "On" : "Off"}</strong>
         </button>
