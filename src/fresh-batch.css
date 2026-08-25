@@ -45,6 +45,11 @@ body {
   animation: fresh-batch-marquee 58s linear infinite;
 }
 
+.fresh-batch-ticker__viewport:hover .fresh-batch-ticker__track,
+.fresh-batch-ticker__viewport:focus-within .fresh-batch-ticker__track {
+  animation-play-state: paused;
+}
+
 .fresh-batch-label,
 .fresh-batch-source,
 .fresh-batch-kicker,
@@ -212,6 +217,15 @@ body {
   line-height: 1;
 }
 
+.fresh-batch-pocket h2 span {
+  display: inline-block;
+  color: var(--fresh-muted);
+  font-family: var(--fresh-font-body);
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
 .fresh-batch-pocket__updated {
   color: var(--fresh-muted);
   font-size: 0.68rem;
@@ -225,6 +239,8 @@ body {
 }
 
 .fresh-batch-pocket__story {
+  display: grid;
+  gap: var(--fresh-space-2);
   min-width: 0;
   border-top: 1px solid var(--fresh-line);
   padding-top: var(--fresh-space-3);

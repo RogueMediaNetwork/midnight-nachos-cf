@@ -6,3 +6,9 @@ pages_build_output_dir = "dist"
 binding = "STORIES_KV"
 id = "16d850c099704d708e7af8da0356ddb7"
 preview_id = "16d850c099704d708e7af8da0356ddb7"
+
+[[d1_databases]]
+binding = "COMMUNITY_DB"
+database_name = "midnight-nachos-community"
+database_id = "3ee76aee-414b-44d1-a6ab-f4026c4d2648"
+preview_database_id = "COMMUNITY_DB"

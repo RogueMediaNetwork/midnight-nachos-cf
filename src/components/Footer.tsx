@@ -28,7 +28,10 @@ export default function Footer() {
               Disclaimer: Midnight Nachos does not sell edible products directly. All items in the Midnight Shop are either custom POD apparel manufactured on-demand by Printify or curated external Amazon Affiliate items.
             </p>
             <p>
-              As an Amazon Associate, we earn a tiny commission from qualifying purchases made via our links. This helps keep our server running and our cheese hot!
+              We may earn a small commission from qualifying gear links. This helps keep our server running and our cheese hot.
+            </p>
+            <p className="mt-2">
+              Midnight Nachos is for adults in places where cannabis-related content is lawful. We do not sell, endorse, or encourage illegal products or activities; please know and follow your local laws.
             </p>
           </div>
         </div>

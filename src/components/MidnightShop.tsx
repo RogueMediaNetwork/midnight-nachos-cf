@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { HYBRID_PRODUCTS } from "../data/products";
 import { Product } from "../types";
-import { ShoppingBag, Star, RefreshCw, Layers, Check, ExternalLink, Heart } from "lucide-react";
+import { ShoppingBag, Star, ExternalLink, Heart } from "lucide-react";
 
 const APP_COLORS = [
   { name: "Cosmic Charcoal", hex: "#1e1e24", bg: "bg-slate-800" },
@@ -66,7 +66,7 @@ export default function MidnightShop() {
           The Midnight <span className="text-sky-400">Hybrid Shop</span>
         </h2>
         <p className="mx-auto mt-2 max-w-lg text-sm text-slate-400">
-          Cozy stoner apparel generated on-demand via Printify alongside curated Amazon affiliate gear to supercharge your late-night kitchen setup.
+          Cozy Stoner Apparel alongside curated gear to supercharge your late-night kitchen setup.
         </p>
       </div>
 
@@ -93,7 +93,7 @@ export default function MidnightShop() {
                   : "bg-white/5 hover:bg-white/10 text-slate-300 border border-white/5"
               }`}
             >
-              POD Apparel
+              Apparel
             </button>
             <button
               onClick={() => setSelectedType("affiliate")}
@@ -130,7 +130,7 @@ export default function MidnightShop() {
                           ? "bg-purple-500/90 text-white"
                           : "bg-amber-600/90 text-white"
                       }`}>
-                        {prod.type === "apparel" ? "Printify POD" : "Affiliate"}
+                        {prod.type === "apparel" ? "Apparel" : "Gear"}
                       </span>
 
                       {/* Favorite Button */}
@@ -180,7 +180,7 @@ export default function MidnightShop() {
                           : "bg-sky-500 text-black hover:bg-sky-400"
                       }`}
                     >
-                      <span>{prod.type === "affiliate" ? "Amazon Link" : "Order Custom"}</span>
+                      <span>{prod.type === "affiliate" ? "View Gear" : "Order Custom"}</span>
                       {prod.type === "affiliate" && <ExternalLink className="h-3 w-3" />}
                     </button>
                   </div>
@@ -190,13 +190,13 @@ export default function MidnightShop() {
           </div>
         </div>
 
-        {/* Right Column: Printify POD Interactive customizer (5 columns) */}
+        {/* Right Column: Interactive apparel customizer (5 columns) */}
         <div className="lg:col-span-5">
           {customizingProduct ? (
             <div className="sticky top-24 rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-md">
               <div className="flex items-center justify-between mb-4">
                 <span className="text-[10px] uppercase tracking-widest text-purple-400 font-bold font-mono">
-                  Printify Customization Deck
+                  Custom Apparel Preview
                 </span>
                 <span className="text-[9px] font-mono rounded bg-white/10 px-2 py-0.5 text-slate-400">
                   Interactive Preview
@@ -217,7 +217,7 @@ export default function MidnightShop() {
 
                 {/* Abstract overlay graphics */}
                 <div className="absolute top-4 left-4 text-[9px] font-mono text-white/20 select-none uppercase tracking-widest">
-                  Printify POD Layer-X
+                  Midnight Nachos Apparel
                 </div>
 
                 {/* Simulated Graphic Print on the shirt */}
@@ -291,7 +291,7 @@ export default function MidnightShop() {
             <div className="sticky top-24 rounded-3xl border border-dashed border-slate-800 bg-slate-950/20 p-8 text-center">
               <ShoppingBag className="mx-auto h-8 w-8 text-slate-700 mb-2" />
               <p className="text-xs text-slate-500">
-                Select any custom Printify apparel on the left, then use this interactive terminal to preview customized threads before ordering!
+                Select any custom apparel on the left, then use this interactive terminal to preview customized threads before ordering.
               </p>
             </div>
           )}
@@ -312,7 +312,7 @@ export default function MidnightShop() {
             {checkoutStep === "cart" ? (
               <div className="space-y-4">
                 <span className="text-[10px] font-mono uppercase tracking-widest text-sky-400 font-bold">
-                  Printify Checkout Desk
+                  Order Preview Desk
                 </span>
                 <h3 className="text-xl font-bold text-white">Review Custom Specifications</h3>
                 
@@ -335,8 +335,8 @@ export default function MidnightShop() {
                     <span className="text-white">${cartItem.price.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-xs">
-                    <span className="text-slate-400">On-Demand Production (Printify):</span>
-                    <span className="text-emerald-400">FREE / INCLUDED</span>
+                    <span className="text-slate-400">Apparel fulfillment:</span>
+                    <span className="text-emerald-400">Launch details soon</span>
                   </div>
                   <div className="flex justify-between text-sm font-black pt-2 border-t border-white/10 text-white">
                     <span>Total Due:</span>
@@ -345,7 +345,7 @@ export default function MidnightShop() {
                 </div>
 
                 <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3 text-[10px] text-amber-400 leading-relaxed font-sans">
-                  Demo notice: This is a direct Cloudflare integration simulation. In production, this links to our direct Printify Merchant Webhook to route print queues instantly!
+                  Shop notice: this is an order preview. Live inventory and checkout will arrive with the shop launch.
                 </div>
 
                 <button
@@ -361,9 +361,9 @@ export default function MidnightShop() {
                   ✓
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-white">Order Dispatched to Printify!</h3>
+                  <h3 className="text-lg font-bold text-white">Order Preview Saved</h3>
                   <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                    The cheese is melting and the thread counts are aligning. Since your order is custom, it will enter our instant print queue shortly. Keep your vibes cozy!
+                    Your custom details are ready for the shop launch. Keep your vibes cozy.
                   </p>
                 </div>
                 <button

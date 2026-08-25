@@ -138,7 +138,7 @@ export function FreshBatchPocket() {
       <div className="fresh-batch-pocket__head">
         <div>
           <span className="fresh-batch-kicker">A little something fresh</span>
-          <h2 id="fresh-batch-pocket-title">Two more from the wire</h2>
+          <h2 id="fresh-batch-pocket-title">Two more from the wire <span>(Warning: good and bad vibes included.)</span></h2>
         </div>
         <span className="fresh-batch-pocket__updated">{timeLabel(updatedAt)} · deduped</span>
       </div>

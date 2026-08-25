@@ -1,6 +1,13 @@
 [
   {
     "date": "2026-08-25",
+    "macrostructure": "Illustrated Community Thread",
+    "theme": "existing Midnight Nachos mood system",
+    "enrichment": "generated recipe and anonymous-story contact sheets",
+    "brief": "Add original artwork to the recipe and story feeds, database-backed unique voting, anonymous replies, and small copy refinements."
+  },
+  {
+    "date": "2026-08-25",
     "macrostructure": "Mood-Cycled Playroom",
     "theme": "hacky-sack campfire, citrus, garden, and daytrip palettes",
     "enrichment": "animated star field",

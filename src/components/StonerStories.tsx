@@ -1,6 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { StonerStory } from "../types";
-import { MessageSquare, ThumbsUp, Send, Loader2, RefreshCw, Tag, AlertTriangle } from "lucide-react";
+import { useState, useEffect, type FormEvent } from "react";
+import { StonerStory, StoryComment } from "../types";
+import { MessageSquare, ThumbsUp, Send, Loader2, RefreshCw, Tag, AlertTriangle, MessageCircle } from "lucide-react";
+
+type VoteResponse = { upvotes: number; alreadyVoted?: boolean; error?: string };
+
+function storyArtPanel(story: StonerStory) {
+  const cue = `${story.title} ${story.content}`.toLowerCase();
+  if (/freezer|ice cream|frost/.test(cue)) return "story-art--freezer";
+  if (/ceiling fan|golden retriever|dog/.test(cue)) return "story-art--fan";
+  if (/hot pocket|cold pocket|turntable/.test(cue)) return "story-art--pocket";
+  return "story-art--cereal";
+}
 
 export default function StonerStories() {
   const [stories, setStories] = useState<StonerStory[]>([]);
@@ -13,7 +23,15 @@ export default function StonerStories() {
   const [tagInput, setTagInput] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [votedStories, setVotedStories] = useState<string[]>([]);
+  const [votedStories, setVotedStories] = useState<string[]>(() => {
+    try { return JSON.parse(window.localStorage.getItem("midnight-nachos-votes") || "[]") as string[]; }
+    catch { return []; }
+  });
+  const [openCommentStories, setOpenCommentStories] = useState<string[]>([]);
+  const [commentsByStory, setCommentsByStory] = useState<Record<string, StoryComment[]>>({});
+  const [commentDrafts, setCommentDrafts] = useState<Record<string, string>>({});
+  const [commentsLoading, setCommentsLoading] = useState<string[]>([]);
+  const [commentSubmitting, setCommentSubmitting] = useState<string[]>([]);
   
   // Tag filter states
   const [selectedTag, setSelectedTag] = useState<string>("All");
@@ -26,10 +44,10 @@ export default function StonerStories() {
       if (!res.ok) {
         throw new Error("Failed to load stories from the astral matrix.");
       }
-      const data = await res.json();
-      setStories(data);
-    } catch (err: any) {
-      setError(err.message || "An unexpected disturbance occurred while retrieving stories.");
+      const data = await res.json() as StonerStory[];
+      setStories(Array.isArray(data) ? data : []);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "An unexpected disturbance occurred while retrieving stories.");
     } finally {
       setLoading(false);
     }
@@ -39,10 +57,14 @@ export default function StonerStories() {
     fetchStories();
   }, []);
 
+  useEffect(() => {
+    window.localStorage.setItem("midnight-nachos-votes", JSON.stringify(votedStories));
+  }, [votedStories]);
+
   const handleUpvote = async (id: string) => {
     if (votedStories.includes(id)) return; // Prevent double voting in session
     
-    // Optimistic UI update
+    // Optimistic UI update; the server's D1 unique key is the authority.
     setStories(prev => prev.map(s => s.id === id ? { ...s, upvotes: s.upvotes + 1 } : s));
     setVotedStories(prev => [...prev, id]);
 
@@ -50,17 +72,59 @@ export default function StonerStories() {
       const res = await fetch(`/api/stories/${id}/upvote`, {
         method: "POST"
       });
-      if (!res.ok) {
-        // Rollback on error
-        setStories(prev => prev.map(s => s.id === id ? { ...s, upvotes: s.upvotes - 1 } : s));
-        setVotedStories(prev => prev.filter(item => item !== id));
-      }
+      const data = await res.json() as VoteResponse;
+      if (!res.ok && res.status !== 409) throw new Error(data.error || "Vote could not be saved.");
+      setStories(prev => prev.map(s => s.id === id ? { ...s, upvotes: data.upvotes } : s));
     } catch (err) {
-      console.error("Failed to sync vote with server:", err);
+      setStories(prev => prev.map(s => s.id === id ? { ...s, upvotes: Math.max(0, s.upvotes - 1) } : s));
+      setVotedStories(prev => prev.filter(item => item !== id));
+      setError(err instanceof Error ? err.message : "Vote could not be saved.");
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const loadComments = async (storyId: string) => {
+    setCommentsLoading(prev => [...new Set([...prev, storyId])]);
+    try {
+      const res = await fetch(`/api/stories/${storyId}/comments`);
+      if (!res.ok) throw new Error("Comments are taking a snack break.");
+      const data = await res.json() as StoryComment[];
+      setCommentsByStory(prev => ({ ...prev, [storyId]: Array.isArray(data) ? data : [] }));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Comments are unavailable right now.");
+    } finally {
+      setCommentsLoading(prev => prev.filter(id => id !== storyId));
+    }
+  };
+
+  const toggleComments = (storyId: string) => {
+    const isOpen = openCommentStories.includes(storyId);
+    setOpenCommentStories(prev => isOpen ? prev.filter(id => id !== storyId) : [...prev, storyId]);
+    if (!isOpen && !commentsByStory[storyId]) void loadComments(storyId);
+  };
+
+  const submitComment = async (event: FormEvent<HTMLFormElement>, storyId: string) => {
+    event.preventDefault();
+    const content = (commentDrafts[storyId] || "").trim();
+    if (content.length < 3) return;
+    setCommentSubmitting(prev => [...new Set([...prev, storyId])]);
+    try {
+      const res = await fetch(`/api/stories/${storyId}/comments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content }),
+      });
+      const data = await res.json() as StoryComment & { error?: string };
+      if (!res.ok) throw new Error(data.error || "Comment could not be posted.");
+      setCommentsByStory(prev => ({ ...prev, [storyId]: [...(prev[storyId] || []), data] }));
+      setCommentDrafts(prev => ({ ...prev, [storyId]: "" }));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Comment could not be posted.");
+    } finally {
+      setCommentSubmitting(prev => prev.filter(id => id !== storyId));
+    }
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !content.trim()) return;
 
@@ -89,7 +153,7 @@ export default function StonerStories() {
         throw new Error("Unable to deliver story to the mainframe.");
       }
 
-      const newStory = await res.json();
+      const newStory = await res.json() as StonerStory;
       setStories(prev => [newStory, ...prev]);
       setTitle("");
       setContent("");
@@ -98,8 +162,8 @@ export default function StonerStories() {
       
       // Auto dismiss success toast
       setTimeout(() => setSubmitSuccess(false), 5000);
-    } catch (err: any) {
-      setError(err.message || "Submission failed. Please try again.");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Submission failed. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -161,6 +225,12 @@ export default function StonerStories() {
             )}
           </div>
 
+          {error && (
+            <p className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-300" role="alert">
+              {error}
+            </p>
+          )}
+
           {/* Stories List */}
           {loading ? (
             <div className="flex flex-col items-center justify-center py-20 text-slate-500">
@@ -182,6 +252,10 @@ export default function StonerStories() {
             <div className="space-y-6">
               {filteredStories.map((story) => {
                 const alreadyVoted = votedStories.includes(story.id);
+                const commentsOpen = openCommentStories.includes(story.id);
+                const comments = commentsByStory[story.id] || [];
+                const isLoadingComments = commentsLoading.includes(story.id);
+                const isSubmittingComment = commentSubmitting.includes(story.id);
                 const timeStr = story.createdAt 
                   ? new Date(story.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
                   : "Late Night";
@@ -191,13 +265,14 @@ export default function StonerStories() {
                     key={story.id}
                     className="group rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-md hover:border-white/20 transition-all duration-300"
                   >
-                    <div className="flex items-start justify-between gap-2 mb-4">
-                      <div>
+                    <div className="flex items-start gap-4 mb-4">
+                      <div className={`story-art ${storyArtPanel(story)}`} role="img" aria-label={`Anonymous illustration for ${story.title}`} />
+                      <div className="min-w-0 flex-1">
                         <h3 className="text-lg font-bold text-white group-hover:text-pink-300 transition-colors">
                           {story.title}
                         </h3>
-                        <span className="text-[10px] text-gray-500 font-mono">
-                          Anonymous Reporter • {timeStr}
+                        <span className="inline-flex items-center gap-1 text-[10px] text-gray-500 font-mono">
+                          <span className="story-anonymous-mark" aria-hidden="true">◌</span> Anonymous Reporter • {timeStr}
                         </span>
                       </div>
                       
@@ -223,7 +298,7 @@ export default function StonerStories() {
                     <div className="h-[1px] bg-white/10 w-full mb-3" />
 
                     {/* Story Tags */}
-                    <div className="flex flex-wrap gap-1.5">
+                    <div className="flex flex-wrap items-center gap-1.5">
                       {story.tags.map((tag) => (
                         <span
                           key={tag}
@@ -233,7 +308,47 @@ export default function StonerStories() {
                           #{tag}
                         </span>
                       ))}
+                      <button
+                        type="button"
+                        onClick={() => toggleComments(story.id)}
+                        className="story-comment-toggle ml-auto inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-mono"
+                        aria-expanded={commentsOpen}
+                      >
+                        <MessageCircle className="h-3.5 w-3.5" />
+                        {commentsOpen ? "Close replies" : "Reply"}
+                      </button>
                     </div>
+
+                    {commentsOpen && (
+                      <section className="story-comments" aria-label={`Replies to ${story.title}`}>
+                        <div className="story-comments__head">
+                          <span>Anonymous replies</span>
+                          {isLoadingComments && <Loader2 className="h-3.5 w-3.5 animate-spin" aria-label="Loading comments" />}
+                        </div>
+                        {comments.map(comment => (
+                          <div className="story-comment" key={comment.id}>
+                            <span>Anonymous Nacho</span>
+                            <p>{comment.content}</p>
+                          </div>
+                        ))}
+                        {!isLoadingComments && !comments.length && <p className="story-comments__empty">No replies yet. Be kind and start the thread.</p>}
+                        <form onSubmit={(event) => void submitComment(event, story.id)} className="story-comment-form">
+                          <label className="sr-only" htmlFor={`comment-${story.id}`}>Add an anonymous reply</label>
+                          <textarea
+                            id={`comment-${story.id}`}
+                            value={commentDrafts[story.id] || ""}
+                            onChange={(event) => setCommentDrafts(prev => ({ ...prev, [story.id]: event.target.value.slice(0, 600) }))}
+                            placeholder="Leave an anonymous reply…"
+                            maxLength={600}
+                            rows={2}
+                            required
+                          />
+                          <button type="submit" disabled={isSubmittingComment || (commentDrafts[story.id] || "").trim().length < 3}>
+                            {isSubmittingComment ? "Sending…" : "Post reply"}
+                          </button>
+                        </form>
+                      </section>
+                    )}
                   </article>
                 );
               })}

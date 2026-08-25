@@ -9,6 +9,7 @@
   --mn-secondary: oklch(73% 0.13 150);
   --mn-glow-one: oklch(48% 0.13 48 / 30%);
   --mn-glow-two: oklch(44% 0.11 142 / 22%);
+  --mn-font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 [data-mood="citrus"] {

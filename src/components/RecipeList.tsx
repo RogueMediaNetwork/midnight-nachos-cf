@@ -1,7 +1,15 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { PRESET_RECIPES } from "../data/recipes";
 import { Recipe } from "../types";
-import { Clock, Star, Flame, ChevronDown, ChevronUp, Utensils, Compass } from "lucide-react";
+import { Clock, Star, ChevronDown, ChevronUp, Utensils, Compass } from "lucide-react";
+
+function recipeArtPanel(recipe: Recipe) {
+  const cue = `${recipe.name} ${recipe.description}`.toLowerCase();
+  if (recipe.category === "beverage" || /shake|soda|tea|cold brew|bubble/.test(cue)) return "recipe-art--drink";
+  if (recipe.category === "sweet" || /brownie|oreo|churro|cake|s'more|fudge/.test(cue)) return "recipe-art--sweet";
+  if (/wrap|quesadilla|pizza|burger|tortilla/.test(cue)) return "recipe-art--wrap";
+  return "recipe-art--snack";
+}
 
 export default function RecipeList() {
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("All");
@@ -112,6 +120,11 @@ export default function RecipeList() {
                 className="group flex flex-col justify-between rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-md hover:border-white/20 transition-all duration-300"
               >
                 <div>
+                  <div
+                    className={`recipe-art ${recipeArtPanel(recipe)}`}
+                    role="img"
+                    aria-label={`Illustration inspired by ${recipe.name}`}
+                  />
                   {/* Card Header metadata */}
                   <div className="flex items-center justify-between gap-2 mb-3">
                     <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-400 font-bold">

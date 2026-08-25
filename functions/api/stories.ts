@@ -1,5 +1,6 @@
 interface Env {
   STORIES_KV: KVNamespace;
+  COMMUNITY_DB: D1Database;
 }
 
 const SEED_STORIES = [
@@ -49,8 +50,15 @@ async function getStories(kv: KVNamespace) {
 export const onRequestGet: PagesFunction<Env> = async ({ env }) => {
   try {
     const stories = await getStories(env.STORIES_KV);
+    const voteRows = await env.COMMUNITY_DB.prepare(
+      "SELECT story_id, COUNT(*) AS votes FROM story_votes GROUP BY story_id"
+    ).all<{ story_id: string; votes: number }>();
+    const voteTotals = new Map(voteRows.results.map(row => [row.story_id, Number(row.votes)]));
     stories.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-    return Response.json(stories);
+    return Response.json(stories.map((story: any) => ({
+      ...story,
+      upvotes: Number(story.upvotes || 0) + (voteTotals.get(story.id) || 0),
+    })));
   } catch (err) {
     return Response.json({ error: "Failed to load stories" }, { status: 500 });
   }

@@ -342,8 +342,8 @@ export default function MunchieChef() {
                     <span>Rating: {recipe.highnessRequired}</span>
                   </div>
                   {isMock && (
-                    <span className="inline-flex items-center rounded-full bg-purple-500/10 border border-purple-500/20 px-2.5 py-0.5 text-[10px] font-medium text-purple-400">
-                      Demo Mode
+                    <span className="inline-flex items-center rounded-full bg-purple-500/10 border border-purple-500/20 px-2.5 py-0.5 text-[10px] font-medium text-purple-400" title="A quick, curated recipe from the Midnight Nachos kitchen.">
+                      Instant Recipe
                     </span>
                   )}
                 </div>

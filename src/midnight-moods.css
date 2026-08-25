@@ -90,6 +90,125 @@
 
 .arcade-falling-item { will-change: transform; }
 
+.recipe-art,
+.story-art {
+  overflow: hidden;
+  background-repeat: no-repeat;
+  background-size: 204% 204%;
+  background-color: var(--mn-surface-raised);
+}
+
+.recipe-art {
+  aspect-ratio: 16 / 7;
+  margin-bottom: 1rem;
+  border: 1px solid color-mix(in oklch, var(--mn-text) 13%, transparent);
+  border-radius: 1rem;
+  background-image: url("/images/editorial/cozy-recipes-contact-sheet.png");
+}
+
+.recipe-art--snack { background-position: 0% 0%; }
+.recipe-art--wrap { background-position: 100% 0%; }
+.recipe-art--sweet { background-position: 0% 100%; }
+.recipe-art--drink { background-position: 100% 100%; }
+
+.story-art {
+  flex: 0 0 6.5rem;
+  width: 6.5rem;
+  aspect-ratio: 1;
+  border-radius: 1rem;
+  background-image: url("/images/editorial/anonymous-stories-contact-sheet.png");
+}
+
+.story-art--cereal { background-position: 0% 0%; }
+.story-art--freezer { background-position: 100% 0%; }
+.story-art--fan { background-position: 0% 100%; }
+.story-art--pocket { background-position: 100% 100%; }
+
+.story-anonymous-mark { color: var(--mn-accent); font-size: 1rem; line-height: 0; }
+
+.story-comment-toggle {
+  border: 1px solid color-mix(in oklch, var(--mn-text) 14%, transparent);
+  background: var(--mn-surface);
+  color: var(--mn-muted);
+  cursor: pointer;
+  transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+
+.story-comment-toggle:hover { border-color: var(--mn-accent); color: var(--mn-text); }
+.story-comment-toggle:active { background: var(--mn-surface-raised); }
+.story-comment-toggle:focus-visible { outline: 3px solid var(--mn-accent); outline-offset: 3px; }
+
+.story-comments {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid color-mix(in oklch, var(--mn-text) 14%, transparent);
+}
+
+.story-comments__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--mn-accent);
+  font-family: var(--mn-font-mono);
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.story-comment {
+  padding-left: 0.75rem;
+  border-left: 2px solid color-mix(in oklch, var(--mn-accent) 46%, transparent);
+}
+
+.story-comment span,
+.story-comments__empty {
+  color: var(--mn-muted);
+  font-family: var(--mn-font-mono);
+  font-size: 0.66rem;
+}
+
+.story-comment p {
+  margin-top: 0.2rem;
+  color: var(--mn-text);
+  font-size: 0.76rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.story-comment-form { display: grid; gap: 0.5rem; }
+.story-comment-form textarea {
+  width: 100%;
+  resize: vertical;
+  border: 1px solid color-mix(in oklch, var(--mn-text) 18%, transparent);
+  border-radius: 0.75rem;
+  background: var(--mn-bg);
+  color: var(--mn-text);
+  padding: 0.65rem 0.75rem;
+  font: inherit;
+  font-size: 0.75rem;
+}
+.story-comment-form textarea:focus { border-color: var(--mn-accent); outline: none; }
+.story-comment-form textarea:focus-visible { outline: 3px solid var(--mn-accent); outline-offset: 3px; }
+.story-comment-form button {
+  justify-self: end;
+  border: 1px solid var(--mn-accent);
+  border-radius: 999px;
+  background: var(--mn-accent);
+  color: var(--mn-bg);
+  cursor: pointer;
+  padding: 0.48rem 0.85rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  transition: background-color 160ms ease, color 160ms ease, opacity 160ms ease;
+}
+.story-comment-form button:hover { background: var(--mn-secondary); }
+.story-comment-form button:active { opacity: 0.84; }
+.story-comment-form button:focus-visible { outline: 3px solid var(--mn-text); outline-offset: 3px; }
+.story-comment-form button:disabled { cursor: not-allowed; opacity: 0.5; }
+
 @keyframes arcade-twinkle {
   0%, 100% { opacity: 0.16; transform: scale(0.7); }
   50% { opacity: 0.94; transform: scale(1.7); }
@@ -98,4 +217,9 @@
 @media (prefers-reduced-motion: reduce) {
   .arcade-star { animation: none; opacity: 0.65; }
   .mn-mood-switch, .mn-social-link { transition: none; }
+}
+
+@media (max-width: 640px) {
+  .story-art { flex-basis: 5rem; width: 5rem; border-radius: 0.8rem; }
+  .recipe-art { aspect-ratio: 16 / 8; }
 }

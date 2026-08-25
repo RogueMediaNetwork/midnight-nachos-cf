@@ -7,6 +7,12 @@ export interface StonerStory {
   createdAt: string;
 }
 
+export interface StoryComment {
+  id: string;
+  content: string;
+  createdAt: string;
+}
+
 export interface Recipe {
   id: string;
   name: string;
