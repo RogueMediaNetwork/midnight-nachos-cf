@@ -1,12 +1,11 @@
 interface Env { STORIES_KV: KVNamespace; }
 
 type Coordinate = { latitude: number; longitude: number; area: string };
-type OverpassElement = { type: string; id: number; lat?: number; lon?: number; center?: { lat: number; lon: number }; tags?: Record<string, string> };
+type PhotonFeature = { geometry?: { coordinates?: [number, number] }; properties?: Record<string, string | number | undefined> };
 type DirectoryListing = { id: string; name: string; kind: string; address: string; distanceMiles: number; latitude: number; longitude: number };
 
-const MAX_RADIUS_METERS = 16_093;
 const CACHE_SECONDS = 60 * 60;
-const SEARCH_TERMS = "cannabis|dispensary|smoke|vape|head[ _-]?shop|cbd|hemp|gumm(y|ies)";
+const DIRECTORY_TERMS = ["dispensary", "smoke shop", "vape shop", "cbd", "hemp", "gummies"];
 
 function json(body: unknown, init: ResponseInit = {}) {
   return Response.json(body, { ...init, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "public, max-age=900", ...(init.headers ?? {}) } });
@@ -41,32 +40,45 @@ function distanceMiles(origin: Coordinate, latitude: number, longitude: number) 
   return 3_958.8 * 2 * Math.atan2(Math.sqrt(value), Math.sqrt(1 - value));
 }
 
-function kindFor(tags: Record<string, string>) {
-  if (tags.shop === "cannabis" || /dispensary|cannabis/i.test(tags.name || "")) return "Dispensary";
-  if (tags.shop === "vape" || /vape/i.test(tags.name || "")) return "Smoke & vape";
-  if (tags.shop === "tobacco" || /smoke|head[ _-]?shop/i.test(tags.name || "")) return "Smoke shop";
-  if (tags.shop === "herbalist" || /cbd|hemp|gumm/i.test(tags.name || "")) return "CBD & hemp";
+function kindFor(properties: Record<string, string | number | undefined>) {
+  const text = `${properties.name || ""} ${properties.osm_value || ""} ${properties.type || ""}`;
+  if (/dispensary|cannabis/i.test(text)) return "Dispensary";
+  if (/vape/i.test(text)) return "Smoke & vape";
+  if (/smoke|tobacco|head[ _-]?shop/i.test(text)) return "Smoke shop";
+  if (/cbd|hemp|gumm/i.test(text)) return "CBD & hemp";
   return "Accessories & goods";
 }
 
-function addressFor(tags: Record<string, string>) {
-  const lineOne = [tags["addr:housenumber"], tags["addr:street"]].filter(Boolean).join(" ");
-  const lineTwo = [tags["addr:city"], tags["addr:state"], tags["addr:postcode"]].filter(Boolean).join(", ");
+function addressFor(properties: Record<string, string | number | undefined>) {
+  const lineOne = [properties.housenumber, properties.street].filter(Boolean).join(" ");
+  const lineTwo = [properties.city, properties.state, properties.postcode].filter(Boolean).join(", ");
   return [lineOne, lineTwo].filter(Boolean).join(" · ");
 }
 
-function listingsFrom(elements: OverpassElement[], origin: Coordinate) {
+function listingsFrom(features: PhotonFeature[], origin: Coordinate) {
   const unique = new Map<string, DirectoryListing>();
-  for (const element of elements) {
-    const tags = element.tags ?? {};
-    const latitude = element.lat ?? element.center?.lat;
-    const longitude = element.lon ?? element.center?.lon;
-    const name = tags.name || tags.brand;
+  for (const feature of features) {
+    const properties = feature.properties ?? {};
+    const [longitude, latitude] = feature.geometry?.coordinates ?? [];
+    const name = typeof properties.name === "string" ? properties.name : undefined;
     if (!name || !isLatitude(latitude ?? NaN) || !isLongitude(longitude ?? NaN)) continue;
-    const listing: DirectoryListing = { id: `${element.type}-${element.id}`, name, kind: kindFor(tags), address: addressFor(tags), distanceMiles: distanceMiles(origin, latitude!, longitude!), latitude: latitude!, longitude: longitude! };
+    const listing: DirectoryListing = { id: `${properties.osm_type || "place"}-${properties.osm_id || `${latitude}-${longitude}`}`, name, kind: kindFor(properties), address: addressFor(properties), distanceMiles: distanceMiles(origin, latitude!, longitude!), latitude: latitude!, longitude: longitude! };
     unique.set(listing.id, listing);
   }
   return [...unique.values()].sort((left, right) => left.distanceMiles - right.distanceMiles).slice(0, 18);
+}
+
+function photonUrl(origin: Coordinate, query: string) {
+  const latitudeDelta = 0.12;
+  const longitudeDelta = Math.min(0.22, latitudeDelta / Math.max(Math.cos(origin.latitude * Math.PI / 180), 0.25));
+  const url = new URL("https://photon.komoot.io/api/");
+  url.searchParams.set("q", query);
+  url.searchParams.set("lat", String(origin.latitude));
+  url.searchParams.set("lon", String(origin.longitude));
+  url.searchParams.set("bbox", `${origin.longitude - longitudeDelta},${origin.latitude - latitudeDelta},${origin.longitude + longitudeDelta},${origin.latitude + latitudeDelta}`);
+  url.searchParams.set("limit", "20");
+  url.searchParams.set("osm_tag", "shop");
+  return url.toString();
 }
 
 export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
@@ -95,13 +107,12 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
     }
     if (!origin) return json({ error: "We could not find that ZIP code. Try another nearby ZIP." }, { status: 404 });
 
-    const query = `[out:json][timeout:10];(nwr(around:${MAX_RADIUS_METERS},${origin.latitude},${origin.longitude})["shop"="cannabis"];nwr(around:${MAX_RADIUS_METERS},${origin.latitude},${origin.longitude})["shop"="tobacco"];nwr(around:${MAX_RADIUS_METERS},${origin.latitude},${origin.longitude})["shop"="vape"];nwr(around:${MAX_RADIUS_METERS},${origin.latitude},${origin.longitude})["shop"="herbalist"];nwr(around:${MAX_RADIUS_METERS},${origin.latitude},${origin.longitude})["name"~"${SEARCH_TERMS}",i];);out center tags 60;`;
-    const overpassEndpoint = new URL("https://lz4.overpass-api.de/api/interpreter");
-    overpassEndpoint.searchParams.set("data", query);
-    const response = await fetchWithTimeout(overpassEndpoint.toString(), { headers: { Accept: "application/json", "User-Agent": "MidnightNachosDirectory/1.0 (+https://midnightnachos.com)" } }, 12_000);
-    if (!response.ok) throw new Error("Directory search is temporarily unavailable.");
-    const payload = await response.json() as { elements?: OverpassElement[] };
-    const body = { listings: listingsFrom(payload.elements ?? [], origin), area: origin.area, source: "OpenStreetMap" };
+    const responses = await Promise.all(DIRECTORY_TERMS.map(async term => {
+      const response = await fetchWithTimeout(photonUrl(origin!, term), { headers: { Accept: "application/json" } }, 8_000);
+      if (!response.ok) throw new Error("Directory search is temporarily unavailable.");
+      return response.json() as Promise<{ features?: PhotonFeature[] }>;
+    }));
+    const body = { listings: listingsFrom(responses.flatMap(response => response.features ?? []), origin), area: origin.area, source: "OpenStreetMap via Photon" };
     await env.STORIES_KV.put(cacheKey, JSON.stringify(body), { expirationTtl: CACHE_SECONDS });
     return json(body, { headers: { "x-directory-cache": "MISS" } });
   } catch (error) {
